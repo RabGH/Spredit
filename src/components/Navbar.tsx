@@ -21,7 +21,7 @@ const Navbar = async () => {
         {/* search bar */}
 
         {session?.user ? (
-          <UserAccountsNav />
+          <UserAccountsNav user={session.user} />
         ) : (
           <Link href="/sign-in" className={buttonVariants()}>
             Sign In
