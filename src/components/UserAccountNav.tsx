@@ -6,11 +6,11 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import UserAvatar from "./UserAvatar";
 
-interface UserAccountsNavProps {
+interface UserAccountNavProps {
   user: Pick<User, "name" | "image" | "email">;
 }
 
-const UserAccountsNav: FC<UserAccountsNavProps> = ({ user }) => {
+const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -26,4 +26,4 @@ const UserAccountsNav: FC<UserAccountsNavProps> = ({ user }) => {
   );
 };
 
-export default UserAccountsNav;
+export default UserAccountNav;
