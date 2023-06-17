@@ -1,5 +1,4 @@
 import { LucideProps } from "lucide-react";
-import { Carrot, Coffee } from "lucide-react";
 
 export const Icons = {
   logo: (props: LucideProps) => (
