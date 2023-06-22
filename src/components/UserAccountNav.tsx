@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import UserAvatar from "./UserAvatar";
+import { UserAvatar } from "./UserAvatar";
 import Link from "next/link";
 
 interface UserAccountNavProps {
