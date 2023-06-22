@@ -48,6 +48,15 @@ const Page = () => {
           return loginToast();
         }
       }
+
+      toast({
+        title: "Something went wrong.",
+        description: "Could not create subreddit. Please try again later.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: (data) => {
+      router.push(`/r/${data}`);
     },
   });
 
