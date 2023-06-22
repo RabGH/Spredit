@@ -8,10 +8,12 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { CreateSubredditPayload } from "@/lib/validators/subreddit";
 import { toast } from "@/hooks/use-toast";
+import { useCustomToast } from "@/hooks/use-custom-toast";
 
 const Page = () => {
   const [input, setInput] = useState<string>("");
   const router = useRouter();
+  const { loginToast } = useCustomToast();
 
   //! check fullstack type safety
   const { mutate: createCommunity, isLoading } = useMutation({
@@ -40,6 +42,10 @@ const Page = () => {
               "Please enter a unique subreddit name between 3 and 21 characters.",
             variant: "destructive",
           });
+        }
+
+        if (err.response?.status === 401) {
+          return loginToast();
         }
       }
     },
