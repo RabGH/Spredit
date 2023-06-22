@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/Toaster";
+import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "Spredit",
@@ -27,14 +28,16 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-screen p-12 bg-slate-50 antialiased">
-        {/* @ts-expect-error server component */}
-        <Navbar />
+        <Providers>
+          {/* @ts-expect-error server component */}
+          <Navbar />
 
-        {authModal}
+          {authModal}
 
-        <div className="container max-w-7xl mx-auto h-full pt-12">
-          {children}
-        </div>
+          <div className="container max-w-7xl mx-auto h-full pt-12">
+            {children}
+          </div>
+        </Providers>
         <Toaster />
       </body>
     </html>
