@@ -41,21 +41,22 @@ const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
           </div>
         </div>
 
-        <DropdownMenuSeparator>
-          <DropdownMenuItem asChild>
-            <Link href="/">Feed</Link>
-          </DropdownMenuItem>
-        </DropdownMenuSeparator>
-        <DropdownMenuSeparator>
-          <DropdownMenuItem asChild>
-            <Link href="/r/create">Create community</Link>
-          </DropdownMenuItem>
-        </DropdownMenuSeparator>
-        <DropdownMenuSeparator>
-          <DropdownMenuItem asChild>
-            <Link href="/settings">Settings</Link>
-          </DropdownMenuItem>
-        </DropdownMenuSeparator>
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link href="/">Feed</Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link href="/r/create">Create community</Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link href="/settings">Settings</Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
         <DropdownMenuItem className="cursor-pointer">Sign Out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
