@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+} from "@/components/ui/DropdownMenu";
 import { UserAvatar } from "./UserAvatar";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
