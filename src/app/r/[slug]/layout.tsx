@@ -3,8 +3,14 @@ import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { format } from "date-fns";
+import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Spredit",
+  description: "Spredit! A Reddit clone built with Next.js and TypeScript.",
+};
 
 const Layout = async ({
   children,

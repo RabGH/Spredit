@@ -11,6 +11,11 @@ import { ArrowBigDown, ArrowBigUp, Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+export const metadata = {
+  title: "Spredit Editor",
+  description: "Vote and post on Spredit!",
+};
+
 interface SubRedditPostPageProps {
   params: {
     postId: string;
