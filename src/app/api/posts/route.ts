@@ -69,5 +69,15 @@ export async function GET(req: Request) {
       },
       where: whereClause,
     });
-  } catch (error) {}
+
+    return new Response(JSON.stringify(posts));
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response("Invalid request data passed.", { status: 422 });
+    }
+
+    return new Response("Could not fetch more posts.", {
+      status: 500,
+    });
+  }
 }
