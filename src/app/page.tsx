@@ -14,11 +14,7 @@ export default async function Home() {
       <h1 className="font-bold text-3xl md:text-4xl">Your feed</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-2 md:grid-rows-1 gap-y-4 md:gap-x-4 py-6">
         {/* @ts-expect-error server component */}
-        {session ? (
-          <CustomFeed className="row-start-2 md:row-start-auto" />
-        ) : (
-          <GeneralFeed className="row-start-2 md:row-start-auto" />
-        )}
+        {session ? <CustomFeed className="row-start-2 md:row-start-auto" /> : <GeneralFeed className="row-start-2 md:row-start-auto" />}
         <div className="space-y-6 row-start-1 md:row-start-auto">
           <CreateCommunityCard />
           <ExploreCard />

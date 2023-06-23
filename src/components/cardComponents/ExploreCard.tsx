@@ -19,14 +19,14 @@ const ExploreCard = () => {
             your interests.
           </p>
         </div>
-        <a
+        <Link
           className={buttonVariants({
             className: "w-full mt-4 mb-6",
           })}
           href={"/explore"}
         >
           Explore Communities
-        </a>
+        </Link>
       </div>
     </div>
   );
