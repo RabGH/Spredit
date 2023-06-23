@@ -14,9 +14,7 @@ export default async function Home() {
         {/* display custom feed for logged in users and general feed for no logged in */}
 
         {/* @ts-expect-error server component */}
-        <GeneralFeed />
-
-        {/* {session && <CustomFeed />} */}
+        {session ? <CustomFeed /> : <GeneralFeed />}
 
         {/* subreddit info */}
         <div className="overflow-hidden h-fit reounded-lg border border-gray-200 order-first md:order-last">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Icons } from "../Icons";
-import UserAuthForm from "./UserAuthForm";
+import UserAuthForm from "@/components/userComponents/UserAuthForm";
 
 const SignUp = () => {
   return (
