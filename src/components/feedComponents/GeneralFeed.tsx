@@ -1,10 +1,9 @@
-import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
 import { db } from "@/lib/db";
-import PostFeed from "./PostFeed";
-import { useQuery } from "@tanstack/react-query";
+import PostFeed from "@/components/feedComponents/PostFeed";
+import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
 
 const GeneralFeed = async () => {
-  const posts = await db.post?.findMany({
+  const posts = await db.post.findMany({
     orderBy: {
       createdAt: "desc",
     },
