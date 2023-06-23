@@ -1,113 +1,109 @@
-import { getAuthSession } from "@/lib/auth";
+import CommentsSection from "@/components/CommentsSection";
+import EditorOutput from "@/components/EditorOutput";
+import PostVoteServer from "@/components/post-vote/PostVoteServer";
+import { buttonVariants } from "@/components/ui/Button";
 import { db } from "@/lib/db";
-import { Comment, CommentVote, User } from "@prisma/client";
-import CreateComment from "./CreateComment";
-import PostComment from "@/components/PostComment";
+import { redis } from "@/lib/redis";
+import { formatTimeToNow } from "@/lib/utils";
+import { CachedPost } from "@/types/redis";
+import { Post, User, Vote } from "@prisma/client";
+import { ArrowBigDown, ArrowBigUp, Loader2 } from "lucide-react";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-type ExtendedComment = Comment & {
-  votes: CommentVote[];
-  author: User;
-  replies: ReplyComment[];
-};
-
-type ReplyComment = Comment & {
-  votes: CommentVote[];
-  author: User;
-};
-
-interface CommentsSectionProps {
-  postId: string;
-  comments: ExtendedComment[];
+interface SubRedditPostPageProps {
+  params: {
+    postId: string;
+  };
 }
 
-const CommentsSection = async ({ postId }: CommentsSectionProps) => {
-  const session = await getAuthSession();
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
-  const comments = await db.comment.findMany({
-    where: {
-      postId: postId,
-      replyToId: null,
-    },
-    include: {
-      author: true,
-      votes: true,
-      replies: {
-        include: {
-          author: true,
-          votes: true,
-        },
+const SubRedditPostPage = async ({ params }: SubRedditPostPageProps) => {
+  const cachedPost = (await redis.hgetall(
+    `post:${params.postId}`
+  )) as CachedPost;
+
+  let post: (Post & { votes: Vote[]; author: User }) | null = null;
+
+  if (!cachedPost) {
+    post = await db.post.findFirst({
+      where: {
+        id: params.postId,
       },
-    },
-  });
+      include: {
+        votes: true,
+        author: true,
+      },
+    });
+  }
+
+  if (!post && !cachedPost) return notFound();
 
   return (
-    <div className="flex flex-col gap-y-4 mt-4">
-      <hr className="w-full h-px my-6" />
+    <div>
+      <div className="h-full flex flex-col sm:flex-row items-center sm:items-start justify-between">
+        <Suspense fallback={<PostVoteShell />}>
+          {/* @ts-expect-error server component */}
+          <PostVoteServer
+            postId={post?.id ?? cachedPost.id}
+            getData={async () => {
+              return await db.post.findUnique({
+                where: {
+                  id: params.postId,
+                },
+                include: {
+                  votes: true,
+                },
+              });
+            }}
+          />
+        </Suspense>
 
-      <CreateComment postId={postId} />
+        <div className="sm:w-0 w-full flex-1 bg-white p-4 rounded-sm">
+          <p className="max-h-40 mt-1 truncate text-xs text-gray-500">
+            Posted by u/{post?.author.username ?? cachedPost.authorUsername}{" "}
+            {formatTimeToNow(new Date(post?.createdAt ?? cachedPost.createdAt))}
+          </p>
+          <h1 className="text-xl font-semibold py-2 leading-6 text-gray-900">
+            {post?.title ?? cachedPost.title}
+          </h1>
 
-      <div className="flex flex-col gap-y-6 mt-4">
-        {comments
-          .filter((comment) => !comment.replyToId)
-          .map((topLevelComment) => {
-            const topLevelCommentVotesAmt = topLevelComment.votes.reduce(
-              (acc, vote) => {
-                if (vote.type === "UP") return acc + 1;
-                if (vote.type === "DOWN") return acc - 1;
-                return acc;
-              },
-              0
-            );
-
-            const topLevelCommentVote = topLevelComment.votes.find(
-              (vote) => vote.userId === session?.user.id
-            );
-
-            return (
-              <div key={topLevelComment.id} className="flex flex-col">
-                <div className="mb-2">
-                  <PostComment
-                    comment={topLevelComment}
-                    currentVote={topLevelCommentVote}
-                    votesAmt={topLevelCommentVotesAmt}
-                    postId={postId}
-                  />
-                </div>
-
-                {/* Render replies */}
-                {topLevelComment.replies
-                  .sort((a, b) => b.votes.length - a.votes.length) // Sort replies by most liked
-                  .map((reply) => {
-                    const replyVotesAmt = reply.votes.reduce((acc, vote) => {
-                      if (vote.type === "UP") return acc + 1;
-                      if (vote.type === "DOWN") return acc - 1;
-                      return acc;
-                    }, 0);
-
-                    const replyVote = reply.votes.find(
-                      (vote) => vote.userId === session?.user.id
-                    );
-
-                    return (
-                      <div
-                        key={reply.id}
-                        className="ml-2 py-2 pl-4 border-l-2 border-zinc-200"
-                      >
-                        <PostComment
-                          comment={reply}
-                          currentVote={replyVote}
-                          votesAmt={replyVotesAmt}
-                          postId={postId}
-                        />
-                      </div>
-                    );
-                  })}
-              </div>
-            );
-          })}
+          <EditorOutput content={post?.content ?? cachedPost.content} />
+          <Suspense
+            fallback={
+              <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
+            }
+          >
+            {/* @ts-expect-error Server Component */}
+            <CommentsSection postId={post?.id ?? cachedPost.id} />
+          </Suspense>
+        </div>
       </div>
     </div>
   );
 };
 
-export default CommentsSection;
+function PostVoteShell() {
+  return (
+    <div className="flex items-center flex-col pr-6 w-20">
+      {/* upvote */}
+      <div className={buttonVariants({ variant: "ghost" })}>
+        <ArrowBigUp className="h-5 w-5 text-zinc-700" />
+      </div>
+
+      {/* score */}
+      <div className="text-center py-2 font-medium text-sm text-zinc-900">
+        <Loader2 className="h-3 w-3 animate-spin" />
+      </div>
+
+      {/* downvote */}
+      <div className={buttonVariants({ variant: "ghost" })}>
+        <ArrowBigDown className="h-5 w-5 text-zinc-700" />
+      </div>
+    </div>
+  );
+}
+
+export default SubRedditPostPage;
