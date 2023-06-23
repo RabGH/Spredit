@@ -1,15 +1,10 @@
-const path = require("path");
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     domains: ["uploadthing.com", "lh3.googleusercontent.com"],
   },
   experimental: {
     appDir: true,
-  },
-  webpack: (config) => {
-    config.resolve.alias["@"] = path.join(__dirname, "src");
-    return config;
   },
 };
 
