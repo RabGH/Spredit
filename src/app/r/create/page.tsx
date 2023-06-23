@@ -51,7 +51,7 @@ const Page = () => {
 
       toast({
         title: "Something went wrong.",
-        description: "Could not create subreddit. Please try again later.",
+        description: "Could not create subreddit, please try again later.",
         variant: "destructive",
       });
     },

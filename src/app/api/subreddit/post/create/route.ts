@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     }
 
     return new Response(
-      "Could not post to subreddit at this time. Please try again later",
+      "Could not post to subreddit at this time, please try again later",
       { status: 500 }
     );
   }
