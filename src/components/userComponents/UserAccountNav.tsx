@@ -46,14 +46,14 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           <Link href="/r/create">Create Community</Link>
         </DropdownMenuItem>
 
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link href="/explore">Explore</Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         <DropdownMenuItem asChild>
           <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
-        
+
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"
