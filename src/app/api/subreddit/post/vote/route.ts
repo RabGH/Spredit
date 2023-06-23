@@ -2,14 +2,15 @@ import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { PostVoteValidator } from "@/lib/validators/vote";
-import { CachedPost } from "@/types/redis";
+import type { CachedPost } from "@/types/redis";
 import { z } from "zod";
 
+// change to higher upvotes to cache posts
 const CACHE_AFTER_UPVOTES = 1;
 
 export async function PATCH(req: Request) {
   try {
-    const body = await req.json();
+    const body = req.json();
 
     const { postId, voteType } = PostVoteValidator.parse(body);
 
@@ -19,7 +20,6 @@ export async function PATCH(req: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    // check if user already voted on post
     const existingVote = await db.vote.findFirst({
       where: {
         userId: session.user.id,
@@ -42,7 +42,6 @@ export async function PATCH(req: Request) {
     }
 
     if (existingVote) {
-      // if vote type same as existing vote, delete the vote
       if (existingVote.type === voteType) {
         await db.vote.delete({
           where: {
@@ -52,28 +51,7 @@ export async function PATCH(req: Request) {
             },
           },
         });
-
-        // Recount votes
-        const votesAmt = post.votes.reduce((acc, vote) => {
-          if (vote.type === "UP") return acc + 1;
-          if (vote.type === "DOWN") return acc - 1;
-          return acc;
-        }, 0);
-
-        if (votesAmt >= CACHE_AFTER_UPVOTES) {
-          const cachePayload: CachedPost = {
-            authorUsername: post.author.username ?? "",
-            content: JSON.stringify(post.content),
-            id: post.id,
-            title: post.title,
-            currentVote: null,
-            createdAt: post.createdAt,
-          };
-
-          await redis.hset(`post:${postId}`, cachePayload);
-        }
-
-        return new Response("OK");
+        return new Response("Post registered successfully.");
       }
 
       await db.vote.update({
@@ -88,7 +66,6 @@ export async function PATCH(req: Request) {
         },
       });
 
-      // Recount the votes
       const votesAmt = post.votes.reduce((acc, vote) => {
         if (vote.type === "UP") return acc + 1;
         if (vote.type === "DOWN") return acc - 1;
@@ -111,7 +88,6 @@ export async function PATCH(req: Request) {
       return new Response("OK");
     }
 
-    // if no existing vote, create new vote
     await db.vote.create({
       data: {
         type: voteType,
@@ -119,37 +95,5 @@ export async function PATCH(req: Request) {
         postId,
       },
     });
-
-    // Recount the votes
-    const votesAmt = post.votes.reduce((acc, vote) => {
-      if (vote.type === "UP") return acc + 1;
-      if (vote.type === "DOWN") return acc - 1;
-      return acc;
-    }, 0);
-
-    if (votesAmt >= CACHE_AFTER_UPVOTES) {
-      const cachePayload: CachedPost = {
-        authorUsername: post.author.username ?? "",
-        content: JSON.stringify(post.content),
-        id: post.id,
-        title: post.title,
-        currentVote: voteType,
-        createdAt: post.createdAt,
-      };
-
-      await redis.hset(`post:${postId}`, cachePayload);
-    }
-
-    return new Response("OK");
-  } catch (error) {
-    error;
-    if (error instanceof z.ZodError) {
-      return new Response("Invalid POST request data passed", { status: 422 });
-    }
-
-    return new Response(
-      "Could not register vote at this time, please try again later.",
-      { status: 500 }
-    );
-  }
+  } catch (error) {}
 }
