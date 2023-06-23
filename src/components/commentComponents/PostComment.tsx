@@ -1,10 +1,10 @@
 "use client";
 
 import { FC, useRef, useState } from "react";
-import { UserAvatar } from "@/components/UserAvatar";
+import { UserAvatar } from "@/components/userComponents/UserAvatar";
 import { Comment, CommentVote, User } from "@prisma/client";
 import { formatTimeToNow } from "@/lib/utils";
-import CommentVotes from "@/components/CommentVotes";
+import CommentVotes from "@/components/commentComponents/CommentVotes";
 import { Button } from "@/components/ui/Button";
 import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";

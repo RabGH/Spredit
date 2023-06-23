@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ToFeedButton from "@/components/ToFeedButton";
+import ToFeedButton from "@/components/feedComponents/ToFeedButton";
 
 export const metadata: Metadata = {
   title: "Spredit",

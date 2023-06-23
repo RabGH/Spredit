@@ -1,5 +1,5 @@
-import GeneralFeed from "@/components/GeneralFeed";
-import CustomFeed from "@/components/CustomFeed";
+import GeneralFeed from "@/components/feedComponents/GeneralFeed";
+import CustomFeed from "@/components/feedComponents/CustomFeed";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { HomeIcon } from "lucide-react";
@@ -14,7 +14,9 @@ export default async function Home() {
         {/* display custom feed for logged in users and general feed for no logged in */}
 
         {/* @ts-expect-error server component */}
-        {session ? <CustomFeed /> : <GeneralFeed />}
+        <GeneralFeed />
+
+        {/* {session && <CustomFeed />} */}
 
         {/* subreddit info */}
         <div className="overflow-hidden h-fit reounded-lg border border-gray-200 order-first md:order-last">

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Icons } from "@/components/Icons";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
-import { UserAccountNav } from "@/components/UserAccountNav";
+import { UserAccountNav } from "@/components/userComponents/UserAccountNav";
 import SearchBar from "@/components/SearchBar";
 
 const Navbar = async () => {
