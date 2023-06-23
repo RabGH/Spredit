@@ -5,6 +5,8 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { Comment, CommentVote, User } from "@prisma/client";
 import { formatTimeToNow } from "@/lib/utils";
 import CommentVotes from "@/components/CommentVotes";
+import { Button } from "@/components/ui/Button";
+import { MessageSquare } from "lucide-react";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -55,6 +57,11 @@ const PostComment: FC<PostCommentProps> = ({
           initialVotesAmt={votesAmt}
           initialVote={currentVote}
         />
+
+        <Button variant="ghost" size="xs" aria-label="reply">
+          <MessageSquare className="h-4 w-4 mr-1.5" />
+          Reply
+        </Button>
       </div>
     </div>
   );
