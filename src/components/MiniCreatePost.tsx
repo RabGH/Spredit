@@ -36,12 +36,14 @@ const MiniCreatePost: FC<MiniCreatePostProps> = ({ session }) => {
         <Button
           onClick={() => router.push(pathname + "/submit")}
           variant="ghost"
+          aria-label="Image"
         >
           <ImageIcon className="text-zinc-600" />
         </Button>
         <Button
           onClick={() => router.push(pathname + "/submit")}
           variant="ghost"
+          aria-label="Link"
         >
           <Link2 className="text-zinc-600" />
         </Button>
