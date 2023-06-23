@@ -29,6 +29,7 @@ const page = async ({ params }: PageProps) => {
         orderBy: {
           createdAt: "desc",
         },
+        
         take: INFINITE_SCROLLING_PAGINATION_RESULTS,
       },
     },
