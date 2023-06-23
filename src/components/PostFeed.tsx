@@ -1,13 +1,14 @@
 "use client";
 
-import { FC, useEffect, useRef } from "react";
+import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
 import { ExtendedPost } from "@/types/db";
 import { useIntersection } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
 import axios from "axios";
-import { useSession } from "next-auth/react";
+import { Loader2 } from "lucide-react";
+import { FC, useEffect, useRef } from "react";
 import Post from "./Post";
+import { useSession } from "next-auth/react";
 
 interface PostFeedProps {
   initialPosts: ExtendedPost[];
@@ -20,7 +21,6 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
     root: lastPostRef.current,
     threshold: 1,
   });
-
   const { data: session } = useSession();
 
   const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(
@@ -33,6 +33,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
       const { data } = await axios.get(query);
       return data as ExtendedPost[];
     },
+
     {
       getNextPageParam: (_, pages) => {
         return pages.length + 1;
@@ -42,11 +43,10 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
   );
 
   useEffect(() => {
-    if(entry?.isIntersecting) {
-      fetchNextPage()
+    if (entry?.isIntersecting) {
+      fetchNextPage();
     }
-  }, [entry, fetchNextPage])
-  
+  }, [entry, fetchNextPage]);
 
   const posts = data?.pages.flatMap((page) => page) ?? initialPosts;
 
@@ -67,11 +67,11 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
           return (
             <li key={post.id} ref={ref}>
               <Post
-                currentVote={currentVote}
-                votesAmt={votesAmt}
-                subredditName={post.subreddit.name}
                 post={post}
                 commentAmt={post.comments.length}
+                subredditName={post.subreddit.name}
+                votesAmt={votesAmt}
+                currentVote={currentVote}
               />
             </li>
           );
@@ -79,15 +79,21 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
           return (
             <Post
               key={post.id}
-              currentVote={currentVote}
-              votesAmt={votesAmt}
-              subredditName={post.subreddit.name}
               post={post}
               commentAmt={post.comments.length}
+              subredditName={post.subreddit.name}
+              votesAmt={votesAmt}
+              currentVote={currentVote}
             />
           );
         }
       })}
+
+      {isFetchingNextPage && (
+        <li className="flex justify-center">
+          <Loader2 className="w-6 h-6 text-zinc-500 animate-spin" />
+        </li>
+      )}
     </ul>
   );
 };
