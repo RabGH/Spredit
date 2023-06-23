@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useRef } from "react";
 import { Post, User, Vote } from "@prisma/client";
 import { formatTimeToNow } from "@/lib/utils";
@@ -66,6 +68,7 @@ const Post: FC<PostProps> = ({
             <EditorOutput content={post.content} />
 
             {pRef.current?.clientHeight === 160 ? (
+              // blur bottom if content is too long
               <div className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent" />
             ) : null}
           </div>
