@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/Toaster";
 import Providers from "@/components/Providers";
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: "Spredit",
@@ -39,6 +40,7 @@ export default function RootLayout({
           </div>
         </Providers>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
