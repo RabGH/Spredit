@@ -14,14 +14,7 @@ const CustomFeed = async () => {
     },
   });
 
-  const posts = await db.post.findMany({
-    where: {
-      subreddit: {
-        name: {
-          in: followedCommunities.map(({ subreddit }) => subreddit.id),
-        },
-      },
-    },
+  const allPosts = await db.post.findMany({
     orderBy: {
       createdAt: "desc",
     },
@@ -34,7 +27,27 @@ const CustomFeed = async () => {
     take: INFINITE_SCROLLING_PAGINATION_RESULTS,
   });
 
-  return <PostFeed initialPosts={posts} />;
+  const followedCommunityIds = followedCommunities.map(
+    ({ subreddit }) => subreddit.id
+  );
+
+  const sortedPosts = allPosts.sort((a, b) => {
+    if (
+      followedCommunityIds.includes(a.subredditId) &&
+      !followedCommunityIds.includes(b.subredditId)
+    ) {
+      return -1;
+    } else if (
+      !followedCommunityIds.includes(a.subredditId) &&
+      followedCommunityIds.includes(b.subredditId)
+    ) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
+  return <PostFeed initialPosts={sortedPosts} />;
 };
 
 export default CustomFeed;
