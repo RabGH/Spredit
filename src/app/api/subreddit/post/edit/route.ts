@@ -27,8 +27,8 @@ export async function PATCH(req: Request) {
     await db.post.update({
       where: { id: postId },
       data: {
-        title,
-        content,
+        title: title,
+        content: content,
       },
     });
 

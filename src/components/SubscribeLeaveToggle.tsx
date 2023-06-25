@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/Button";
 import { SubscribeToSubredditPayload } from "@/lib/validators/subreddit";
 import { useMutation } from "@tanstack/react-query";

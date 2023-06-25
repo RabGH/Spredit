@@ -35,6 +35,7 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
 
   const ref = useRef<EditorJS>();
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>(post?.title ?? "");
   const _titleRef = useRef<HTMLTextAreaElement>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -189,7 +190,7 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
 
     const payload: EditPostRequest = {
       postId: post.id,
-      title: data.title,
+      title: title,
       content: blocks as any,
     };
 
@@ -211,11 +212,12 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
         <input type="hidden" name="postId" value={postId} />
         <div className="prose prose-stone dark:prose-invert">
           <TextareaAutosize
-            name="title"
             ref={_titleRef}
             placeholder="Title"
             className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
+            value={title}
             defaultValue={post?.title}
+            onChange={(e) => setTitle(e.target.value)}
           />
 
           <div id="editor" className="min-h-[500px]" />
