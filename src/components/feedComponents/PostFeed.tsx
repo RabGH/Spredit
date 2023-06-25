@@ -72,6 +72,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
                 subredditName={post.subreddit.name}
                 votesAmt={votesAmt}
                 currentVote={currentVote}
+                isAuthor={session?.user?.id === post.authorId}
               />
             </li>
           );
@@ -84,6 +85,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
               subredditName={post.subreddit.name}
               votesAmt={votesAmt}
               currentVote={currentVote}
+              isAuthor={session?.user?.id === post.authorId}
             />
           );
         }

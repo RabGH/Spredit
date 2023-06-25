@@ -4,8 +4,9 @@ import { FC, useRef } from "react";
 import { Post, User, Vote } from "@prisma/client";
 import { formatTimeToNow } from "@/lib/utils";
 import { MessageSquare } from "lucide-react";
-import EditorOutput from "../editorComponents/EditorOutput";
+import EditorOutput from "@/components/editorComponents/EditorOutput";
 import PostVoteClient from "../post-vote/PostVoteClient";
+import EditButton from "@/components/editorComponents/EditButton";
 
 type PartialVote = Pick<Vote, "type">;
 
@@ -18,6 +19,7 @@ interface PostProps {
   commentAmt: number;
   votesAmt: number;
   currentVote?: PartialVote;
+  isAuthor?: boolean;
 }
 
 const Post: FC<PostProps> = ({
@@ -26,6 +28,7 @@ const Post: FC<PostProps> = ({
   commentAmt,
   votesAmt,
   currentVote,
+  isAuthor,
 }) => {
   const pRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +46,7 @@ const Post: FC<PostProps> = ({
             {subredditName ? (
               <>
                 <a
-                  className="udnerline text-zinc-900 text-sm underline-offset-2"
+                  className="underline text-zinc-900 text-sm underline-offset-2"
                   href={`/r/${subredditName}`}
                 >
                   r/{subredditName}
@@ -73,6 +76,9 @@ const Post: FC<PostProps> = ({
             ) : null}
           </div>
         </div>
+        {isAuthor && (
+          <EditButton subredditName={subredditName} postId={post.id} />
+        )}
       </div>
 
       <div className="bg-gray-50 z-20 text-sm p-4 sm:px-6">

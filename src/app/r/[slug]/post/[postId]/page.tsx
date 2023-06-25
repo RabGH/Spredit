@@ -1,4 +1,5 @@
 import CommentsSection from "@/components/commentComponents/CommentsSection";
+import EditButton from "@/components/editorComponents/EditButton";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
 import PostVoteServer from "@/components/post-vote/PostVoteServer";
 import { buttonVariants } from "@/components/ui/Button";
@@ -19,6 +20,7 @@ export const metadata = {
 interface SubRedditPostPageProps {
   params: {
     postId: string;
+    slug: string;
   };
 }
 
@@ -76,6 +78,12 @@ const SubRedditPostPage = async ({ params }: SubRedditPostPageProps) => {
           </h1>
 
           <EditorOutput content={post?.content ?? cachedPost.content} />
+
+          <EditButton
+            subredditName={params.slug}
+            postId={post?.id ?? cachedPost.id}
+          />
+
           <Suspense
             fallback={
               <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
