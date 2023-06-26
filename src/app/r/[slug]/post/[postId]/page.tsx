@@ -1,8 +1,8 @@
 import CommentsSection from "@/components/commentComponents/CommentsSection";
-import EditButton from "@/components/editorComponents/EditButton";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
 import PostVoteServer from "@/components/post-vote/PostVoteServer";
 import { buttonVariants } from "@/components/ui/Button";
+import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { formatTimeToNow } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { Post, User, Vote } from "@prisma/client";
 import { ArrowBigDown, ArrowBigUp, Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import EditButton from "@/components/editorComponents/EditButton";
 
 export const metadata = {
   title: "Spredit Editor",
@@ -24,10 +25,19 @@ interface SubRedditPostPageProps {
   };
 }
 
+interface PostPageProps {
+  params: {
+    id: string;
+    authorId: string;
+  };
+}
+
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-const SubRedditPostPage = async ({ params }: SubRedditPostPageProps) => {
+const SubRedditPostPage = async ({
+  params,
+}: SubRedditPostPageProps & PostPageProps) => {
   const cachedPost = (await redis.hgetall(
     `post:${params.postId}`
   )) as CachedPost;
@@ -47,6 +57,9 @@ const SubRedditPostPage = async ({ params }: SubRedditPostPageProps) => {
   }
 
   if (!post && !cachedPost) return notFound();
+
+  const session = await getAuthSession();
+  const isAuthor = session?.user.id === post?.authorId ?? cachedPost.authorId;
 
   return (
     <div>
@@ -71,19 +84,22 @@ const SubRedditPostPage = async ({ params }: SubRedditPostPageProps) => {
         <div className="sm:w-0 w-full flex-1 bg-white p-4 rounded-sm">
           <p className="max-h-40 mt-1 truncate text-xs text-gray-500">
             Posted by u/{post?.author.username ?? cachedPost.authorUsername}{" "}
-            {formatTimeToNow(new Date(post?.createdAt ?? cachedPost.createdAt))}
+            {formatTimeToNow(new Date(post?.createdAt ?? cachedPost.createdAt))} •{" "}
+            {post?.updatedAt && (
+              <span>Edited {formatTimeToNow(new Date(post.updatedAt))}</span>
+            )}
           </p>
-          <h1 className="text-xl font-semibold py-2 leading-6 text-gray-900">
-            {post?.title ?? cachedPost.title}
-          </h1>
-
+          <div className="flex justify-between items-start">
+            <h1 className="text-xl font-semibold py-2 leading-6 text-gray-900">
+              {post?.title ?? cachedPost.title}
+            </h1>
+            <EditButton
+              subredditName={params.slug}
+              postId={post?.id ?? cachedPost.id}
+              isAuthor={isAuthor}
+            />
+          </div>
           <EditorOutput content={post?.content ?? cachedPost.content} />
-
-          <EditButton
-            isAuthor={isAuthor}
-            subredditName={params.slug}
-            postId={post?.id ?? cachedPost.id}
-          />
 
           <Suspense
             fallback={

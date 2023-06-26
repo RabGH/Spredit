@@ -4,8 +4,8 @@ import { buttonVariants } from "@/components/ui/Button";
 
 interface EditButtonProps {
   subredditName: string;
-  postId: string;
-  isAuthor: boolean;
+  postId?: string;
+  isAuthor?: boolean;
 }
 
 const EditButton: FC<EditButtonProps> = ({
