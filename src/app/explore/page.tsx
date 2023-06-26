@@ -1,4 +1,4 @@
-import GeneralFeed from "@/components/feedComponents/GeneralFeed";
+import GeneralFeed from "@/components/postComponents/GeneralFeed";
 import HomeCard from "@/components/cardComponents/HomeCard";
 import CreateCommunityCard from "@/components/cardComponents/CreateCommunityCard";
 

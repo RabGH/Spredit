@@ -179,8 +179,6 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
   });
 
   async function onSubmit(data: EditPostRequest) {
-    console.log("onSubmit data:", data);
-
     const blocks = await ref.current?.save();
 
     if (post?.id === undefined) {
@@ -193,8 +191,6 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
       title: title,
       content: blocks as any,
     };
-
-    console.log("onSubmit payload:", payload);
 
     updatePost(payload);
   }

@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/Toaster";
-import Providers from "@/components/Providers";
+import Providers from "@/components/layoutComponents/Providers";
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {

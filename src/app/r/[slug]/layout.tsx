@@ -1,4 +1,4 @@
-import SubscribeLeaveToggle from "@/components/SubscribeLeaveToggle";
+import SubscribeLeaveToggle from "@/components/layoutComponents/SubscribeLeaveToggle";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ToFeedButton from "@/components/feedComponents/ToFeedButton";
+import ToFeedButton from "@/components/layoutComponents/ToFeedButton";
 
 export const metadata: Metadata = {
   title: "Spredit",
@@ -32,6 +32,7 @@ const Layout = async ({
       },
     },
   });
+
 
   const subscription = !session?.user
     ? undefined
