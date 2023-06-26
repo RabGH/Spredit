@@ -5,19 +5,28 @@ import { buttonVariants } from "@/components/ui/Button";
 interface EditButtonProps {
   subredditName: string;
   postId: string;
+  isAuthor: boolean;
 }
 
-const EditButton: FC<EditButtonProps> = ({ subredditName, postId }) => {
+const EditButton: FC<EditButtonProps> = ({
+  subredditName,
+  postId,
+  isAuthor,
+}) => {
   return (
-    <Link
-      href={`/r/${subredditName}/post/${postId}/edit`}
-      className={buttonVariants({
-        variant: "outline",
-        className: "px-4 py-2",
-      })}
-    >
-      Edit
-    </Link>
+    <>
+      {isAuthor && (
+        <Link
+          href={`/r/${subredditName}/post/${postId}/edit`}
+          className={buttonVariants({
+            variant: "outline",
+            className: "px-4 py-2",
+          })}
+        >
+          Edit
+        </Link>
+      )}
+    </>
   );
 };
 

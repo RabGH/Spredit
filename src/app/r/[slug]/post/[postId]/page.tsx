@@ -80,6 +80,7 @@ const SubRedditPostPage = async ({ params }: SubRedditPostPageProps) => {
           <EditorOutput content={post?.content ?? cachedPost.content} />
 
           <EditButton
+            isAuthor={isAuthor}
             subredditName={params.slug}
             postId={post?.id ?? cachedPost.id}
           />

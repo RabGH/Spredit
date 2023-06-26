@@ -77,7 +77,11 @@ const Post: FC<PostProps> = ({
           </div>
         </div>
         {isAuthor && (
-          <EditButton subredditName={subredditName} postId={post.id} />
+          <EditButton
+            subredditName={subredditName}
+            postId={post.id}
+            isAuthor={isAuthor}
+          />
         )}
       </div>
 
