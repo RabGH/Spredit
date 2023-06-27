@@ -45,7 +45,6 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
       if (voteType === "UP") setVotesAmt((prev) => prev - 1);
       else setVotesAmt((prev) => prev + 1);
 
-      // reset current vote
       setCurrentVote(prevVote);
 
       if (err instanceof AxiosError) {
@@ -62,12 +61,10 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
     },
     onMutate: (type: VoteType) => {
       if (currentVote === type) {
-        // User is voting the same way again, so remove their vote
         setCurrentVote(undefined);
         if (type === "UP") setVotesAmt((prev) => prev - 1);
         else if (type === "DOWN") setVotesAmt((prev) => prev + 1);
       } else {
-        // User is voting in the opposite direction, so subtract 2
         setCurrentVote(type);
         if (type === "UP") setVotesAmt((prev) => prev + (currentVote ? 2 : 1));
         else if (type === "DOWN")
@@ -78,7 +75,6 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
   //className="flex sm:flex-col gap-4 sm:gap-0 pr-6 sm:w-20 pb-4 sm:pb-0"
   return (
     <div>
-      {/* upvote */}
       <Button
         onClick={() => vote("UP")}
         size="sm"
@@ -92,12 +88,10 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
         />
       </Button>
 
-      {/* score */}
       <p className="text-center py-2 font-medium text-sm text-zinc-900">
         {votesAmt}
       </p>
 
-      {/* downvote */}
       <Button
         onClick={() => vote("DOWN")}
         size="sm"

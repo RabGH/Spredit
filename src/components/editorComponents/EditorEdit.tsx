@@ -104,7 +104,6 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
 
   useEffect(() => {
     if (Object.keys(errors).length) {
-      console.log(errors);
       for (const [_key, value] of Object.entries(errors)) {
         toast({
           title: "Something went wrong.",
@@ -182,7 +181,6 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
     const blocks = await ref.current?.save();
 
     if (post?.id === undefined) {
-      console.log("post.id is undefined");
       return;
     }
 

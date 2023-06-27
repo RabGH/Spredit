@@ -135,7 +135,7 @@ const PostComment: FC<PostCommentProps> = ({
                     if (!input) return;
                     postComment({
                       postId,
-                      text: input,
+                      text: JSON.stringify(input),
                       replyToId: comment.replyToId ?? comment.id,
                     });
                   }}

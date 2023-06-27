@@ -42,6 +42,8 @@ const SubRedditPostPage = async ({
     `post:${params.postId}`
   )) as CachedPost;
 
+  console.log("cachedPost:", cachedPost);
+
   let post: (Post & { votes: Vote[]; author: User }) | null = null;
 
   if (!cachedPost) {
@@ -86,9 +88,10 @@ const SubRedditPostPage = async ({
             Posted by u/{post?.author.username ?? cachedPost.authorUsername}{" "}
             {formatTimeToNow(new Date(post?.createdAt ?? cachedPost.createdAt))}{" "}
             •{" "}
-            {cachedPost?.createdAt !== cachedPost?.updatedAt && (
+            {post?.createdAt !== post?.updatedAt && (
               <span>
-                Edited {formatTimeToNow(new Date(cachedPost.updatedAt))}
+                Edited{" "}
+                {post?.updatedAt && formatTimeToNow(new Date(post.updatedAt))}
               </span>
             )}
           </p>

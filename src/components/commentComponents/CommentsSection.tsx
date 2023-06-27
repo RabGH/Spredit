@@ -3,11 +3,20 @@ import { db } from "@/lib/db";
 import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
 import CreateComment from "./CreateComment";
+import EditorOutput from "../editorComponents/EditorOutput";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
   author: User;
   replies: ReplyComment[];
+  text: {
+    blocks: {
+      type: string;
+      data?: Record<string, any>;
+      text: string;
+    }[];
+    version: string;
+  };
 };
 
 type ReplyComment = Comment & {
@@ -74,34 +83,29 @@ const CommentsSection = async ({ postId }: CommentsSectionProps) => {
                     postId={postId}
                   />
                 </div>
-
-                {/* render replies */}
-                {topLevelComment.replies
-                  .sort((a, b) => b.votes.length - a.votes.length)
-                  .map((reply) => {
-                    const replyVotesAmt = reply.votes.reduce((acc, vote) => {
-                      if (vote.type === "UP") return acc + 1;
-                      if (vote.type === "DOWN") return acc - 1;
-                      return acc;
-                    }, 0);
-
-                    const replyVote = reply.votes.find(
-                      (vote) => vote.userId === session?.user.id
-                    );
-                    return (
-                      <div
-                        key={reply.id}
-                        className="ml-2 py-2 pl-4 border-l-2 border-zinc-200"
-                      >
+                <div className="ml-6">
+                  {topLevelComment.replies.map((replyComment) => (
+                    <div key={replyComment.id} className="flex flex-col">
+                      <div className="mb-2">
                         <PostComment
-                          comment={reply}
-                          currentVote={replyVote}
-                          votesAmt={replyVotesAmt}
+                          comment={replyComment}
+                          votesAmt={replyComment.votes.reduce((acc, vote) => {
+                            if (vote.type === "UP") return acc + 1;
+                            if (vote.type === "DOWN") return acc - 1;
+                            return acc;
+                          }, 0)}
+                          currentVote={replyComment.votes.find(
+                            (vote) => vote.userId === session?.user.id
+                          )}
                           postId={postId}
                         />
                       </div>
-                    );
-                  })}
+                      <div className="ml-6">
+                        <EditorOutput content={String(replyComment.text)} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}
