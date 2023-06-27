@@ -5,7 +5,7 @@ import { PostVoteValidator } from "@/lib/validators/vote";
 import { CachedPost } from "@/types/redis";
 import { z } from "zod";
 
-const CACHE_AFTER_UPVOTES = 1;
+const CACHE_AFTER_UPVOTES = 5;
 
 export async function PATCH(req: Request) {
   try {
@@ -68,6 +68,8 @@ export async function PATCH(req: Request) {
             title: post.title,
             currentVote: null,
             createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
+            authorId: post.author.id,
           };
 
           await redis.hset(`post:${postId}`, cachePayload);
@@ -104,6 +106,8 @@ export async function PATCH(req: Request) {
           title: post.title,
           currentVote: voteType,
           createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          authorId: post.author.id,
         };
 
         await redis.hset(`post:${postId}`, cachePayload);
@@ -136,6 +140,8 @@ export async function PATCH(req: Request) {
         title: post.title,
         currentVote: voteType,
         createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        authorId: post.author.id,
       };
 
       await redis.hset(`post:${postId}`, cachePayload);
