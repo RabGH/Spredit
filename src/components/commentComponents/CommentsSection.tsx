@@ -31,6 +31,7 @@ const CommentsSection = async ({ postId }: CommentsSectionProps) => {
     include: {
       author: true,
       votes: true,
+      replyTo: true,
       replies: {
         include: {
           author: true,

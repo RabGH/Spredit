@@ -99,7 +99,7 @@ model Post {
 
 model Comment {
   id        String   @id @default(cuid())
-  text      String
+  text      Json?
   createdAt DateTime @default(now())
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String

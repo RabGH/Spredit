@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import { CommentRequest } from "@/lib/validators/comment";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
+import EditorOutput from "@/components/editorComponents/EditorOutput";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -87,8 +88,7 @@ const PostComment: FC<PostCommentProps> = ({
         </div>
       </div>
 
-      <p className="text-sm text-zinc-900 mt-2">{comment.text}</p>
-
+      <EditorOutput content={comment.text} />
       <div className="flex gap-2 items-center flex-wrap">
         <CommentVotes
           commentId={comment.id}
