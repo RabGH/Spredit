@@ -1,6 +1,6 @@
 import CommentsSection from "@/components/commentComponents/CommentsSection";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
-import PostVoteServer from "@/components/post-vote/PostVoteServer";
+import PostVoteServer from "@/components/postComponents/post-vote/PostVoteServer";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -84,9 +84,12 @@ const SubRedditPostPage = async ({
         <div className="sm:w-0 w-full flex-1 bg-white p-4 rounded-sm">
           <p className="max-h-40 mt-1 truncate text-xs text-gray-500">
             Posted by u/{post?.author.username ?? cachedPost.authorUsername}{" "}
-            {formatTimeToNow(new Date(post?.createdAt ?? cachedPost.createdAt))} •{" "}
-            {post?.updatedAt && (
-              <span>Edited {formatTimeToNow(new Date(post.updatedAt))}</span>
+            {formatTimeToNow(new Date(post?.createdAt ?? cachedPost.createdAt))}{" "}
+            •{" "}
+            {cachedPost?.createdAt !== cachedPost?.updatedAt && (
+              <span>
+                Edited {formatTimeToNow(new Date(cachedPost.updatedAt))}
+              </span>
             )}
           </p>
           <div className="flex justify-between items-start">

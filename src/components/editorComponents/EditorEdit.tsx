@@ -200,8 +200,6 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
         id="subreddit-post-form"
         className="w-fit"
         onSubmit={(event) => {
-          console.log("handleSubmit event:", event);
-          console.log("postId:", postId);
           handleSubmit(onSubmit)(event);
         }}
       >

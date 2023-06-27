@@ -5,7 +5,7 @@ import { Post, User, Vote } from "@prisma/client";
 import { formatTimeToNow } from "@/lib/utils";
 import { MessageSquare } from "lucide-react";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
-import PostVoteClient from "../post-vote/PostVoteClient";
+import PostVoteClient from "./post-vote/PostVoteClient";
 import EditButton from "@/components/editorComponents/EditButton";
 
 type PartialVote = Pick<Vote, "type">;
@@ -55,7 +55,10 @@ const Post: FC<PostProps> = ({
               </>
             ) : null}
             <span>Posted by u/{post.author.username}</span>{" "}
-            {formatTimeToNow(new Date(post.createdAt))}
+            {formatTimeToNow(new Date(post.createdAt))} •{" "}
+            {post?.createdAt !== post?.updatedAt && (
+              <span>Edited {formatTimeToNow(new Date(post.updatedAt))}</span>
+            )}
           </div>
 
           <a href={`/r/${subredditName}/post/${post.id}`}>
