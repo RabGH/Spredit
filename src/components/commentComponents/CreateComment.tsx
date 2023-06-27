@@ -101,7 +101,7 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
       );
       return data;
     },
-    onError: (err) => {
+    onError: (err: any) => {
       if (err instanceof AxiosError) {
         if (err.response?.status === 401) {
           return loginToast();

@@ -9,15 +9,8 @@ type ExtendedComment = Comment & {
   votes: CommentVote[];
   author: User;
   replies: ReplyComment[];
-  text: {
-    blocks: {
-      type: string;
-      data?: Record<string, any>;
-      text: string;
-    }[];
-    version: string;
+  text: any;
   };
-};
 
 type ReplyComment = Comment & {
   votes: CommentVote[];
@@ -101,7 +94,7 @@ const CommentsSection = async ({ postId }: CommentsSectionProps) => {
                         />
                       </div>
                       <div className="ml-6">
-                        <EditorOutput content={String(replyComment.text)} />
+                        <EditorOutput content={replyComment.text} />
                       </div>
                     </div>
                   ))}

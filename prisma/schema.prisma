@@ -101,7 +101,7 @@ model Comment {
   id        String   @id @default(cuid())
   text      Json?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
