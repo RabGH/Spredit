@@ -63,24 +63,6 @@ const SubRedditPostPage = async ({
   const session = await getAuthSession();
   const isAuthor = session?.user.id === post?.authorId ?? cachedPost.authorId;
 
-  const comments = await db.comment.findMany({
-    where: {
-      postId: params.postId,
-      replyToId: null,
-    },
-    include: {
-      author: true,
-      votes: true,
-      replyTo: true,
-      replies: {
-        include: {
-          author: true,
-          votes: true,
-        },
-      },
-    },
-  });
-
   return (
     <div>
       <div className="h-full flex flex-col sm:flex-row items-center sm:items-start justify-between">
@@ -131,10 +113,7 @@ const SubRedditPostPage = async ({
             }
           >
             {/* @ts-expect-error Server Component */}
-            <CommentsSection
-              postId={post?.id ?? cachedPost.id}
-              comments={comments}
-            />
+            <CommentsSection postId={post?.id ?? cachedPost.id} />
           </Suspense>
         </div>
       </div>

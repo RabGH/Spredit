@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { getAuthSession } from "@/lib/auth";
 import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
@@ -21,25 +22,31 @@ type ReplyComment = Comment & {
 
 interface CommentsSectionProps {
   postId: string;
-  comments: ExtendedComment[];
 }
 
-const CommentsSection = async ({ postId, comments }: CommentsSectionProps) => {
+const CommentsSection = async ({ postId }: CommentsSectionProps) => {
   const session = await getAuthSession();
-
+  const [comments, setComments] = useState<ExtendedComment[]>([]);
   const [isReplying, setIsReplying] = useState<boolean>(false);
 
   const handleReply = () => {
     setIsReplying(true);
   };
 
-  const handleSubCommentPost = () => {
-    setIsReplying(false);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `/api/posts/comments/route?postId=${postId}`
+        );
+        setComments(response.data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
 
-  const handleSubCommentCancel = () => {
-    setIsReplying(false);
-  };
+    fetchData();
+  }, [postId]);
 
   return (
     <div className="flex flex-col gap-y-4 mt-4">
