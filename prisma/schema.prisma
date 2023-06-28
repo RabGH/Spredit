@@ -108,11 +108,13 @@ model Comment {
   postId    String
 
   replyToId String?
-  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies   Comment[] @relation("ReplyTo")
-
+  replyTo   Comment?      @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies   Comment[]     @relation("ReplyTo")
   votes     CommentVote[]
   commentId String?
+  parent    Comment?      @relation("ParentComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId  String?
+  children  Comment[]     @relation("ParentComment")
 }
 
 model Vote {

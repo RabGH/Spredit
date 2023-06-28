@@ -1,8 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
-import CreateComment from "./CreateComment";
+import CreatePostComment from "./CreatePostComment";
 import EditorOutput from "../editorComponents/EditorOutput";
 
 type ExtendedComment = Comment & {
@@ -10,7 +13,7 @@ type ExtendedComment = Comment & {
   author: User;
   replies: ReplyComment[];
   text: any;
-  };
+};
 
 type ReplyComment = Comment & {
   votes: CommentVote[];
@@ -24,6 +27,8 @@ interface CommentsSectionProps {
 
 const CommentsSection = async ({ postId }: CommentsSectionProps) => {
   const session = await getAuthSession();
+
+  const [isReplying, setIsReplying] = useState<boolean>(false);
 
   const comments = await db.comment.findMany({
     where: {
@@ -43,11 +48,23 @@ const CommentsSection = async ({ postId }: CommentsSectionProps) => {
     },
   });
 
+  const handleReply = () => {
+    setIsReplying(true);
+  };
+
+  const handleSubCommentPost = () => {
+    setIsReplying(false);
+  };
+
+  const handleSubCommentCancel = () => {
+    setIsReplying(false);
+  };
+
   return (
     <div className="flex flex-col gap-y-4 mt-4">
       <hr className="w-full h-px my-6" />
 
-      <CreateComment postId={postId} />
+      <CreatePostComment postId={postId} disabled={isReplying} />
 
       <div className="flex flex-col gap-y-6 mt-4">
         {comments
@@ -74,6 +91,7 @@ const CommentsSection = async ({ postId }: CommentsSectionProps) => {
                     votesAmt={topLevelCommentVotesAmt}
                     currentVote={topLevelCommentVote}
                     postId={postId}
+                    onReply={handleReply}
                   />
                 </div>
                 <div className="ml-6">

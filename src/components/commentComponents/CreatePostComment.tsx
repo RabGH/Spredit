@@ -12,12 +12,15 @@ import { useRouter } from "next/navigation";
 import type EditorJS from "@editorjs/editorjs";
 import { uploadFiles } from "@/lib/uploadthing";
 
-interface CreateCommentProps {
+interface CreatePostCommentProps {
   postId: string;
-  replyToId?: string;
+  disabled?: boolean;
 }
 
-const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
+const CreatePostComment: FC<CreatePostCommentProps> = ({
+  postId,
+  disabled,
+}) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
@@ -88,11 +91,10 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
   }, [initializeEditor]);
 
   const { mutate: comment, isLoading } = useMutation({
-    mutationFn: async ({ postId, text, replyToId }: CommentRequest) => {
+    mutationFn: async ({ postId, text }: CommentRequest) => {
       const payload: CommentRequest = {
         postId,
         text,
-        replyToId,
       };
 
       const { data } = await axios.patch(
@@ -126,7 +128,6 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
     const payload: CommentRequest = {
       postId,
       text: blocks,
-      replyToId,
     };
 
     comment(payload);
@@ -141,7 +142,7 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
           className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 p-2"
         />
         <div className="mt-2 flex justify-end">
-          <Button isLoading={isLoading} onClick={onSubmit}>
+          <Button isLoading={isLoading} onClick={onSubmit} disabled={disabled}>
             Post
           </Button>
         </div>
@@ -150,4 +151,4 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
   );
 };
 
-export default CreateComment;
+export default CreatePostComment;
