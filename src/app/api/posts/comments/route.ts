@@ -1,3 +1,4 @@
+import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
@@ -13,10 +14,11 @@ export async function GET(req: Request) {
         postId: url.searchParams.get("postId"),
       });
 
+    const session = await getAuthSession();
+
     const comments = await db.comment.findMany({
       where: {
         postId: postId,
-        replyToId: null,
       },
       include: {
         author: true,

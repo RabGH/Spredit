@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getAuthSession } from "@/lib/auth";
 import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
 import CreatePostComment from "./CreatePostComment";
@@ -25,7 +24,8 @@ interface CommentsSectionProps {
 }
 
 const CommentsSection = async ({ postId }: CommentsSectionProps) => {
-  const session = await getAuthSession();
+  const sessionResponse = await axios.get("/api/getAuthSession");
+  const session = sessionResponse.data;
   const [comments, setComments] = useState<ExtendedComment[]>([]);
   const [isReplying, setIsReplying] = useState<boolean>(false);
 
