@@ -9,5 +9,6 @@ export type CachedPost = {
   currentVote: VoteType | null;
   createdAt: Date;
   updatedAt: Date;
+  comments: Comment[];
 };
 // addded post and updatedAt

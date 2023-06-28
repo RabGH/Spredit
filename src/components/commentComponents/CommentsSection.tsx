@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { getAuthSession } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
 import CreatePostComment from "./CreatePostComment";
@@ -25,28 +24,10 @@ interface CommentsSectionProps {
   comments: ExtendedComment[];
 }
 
-const CommentsSection = async ({ postId }: CommentsSectionProps) => {
+const CommentsSection = async ({ postId, comments }: CommentsSectionProps) => {
   const session = await getAuthSession();
 
   const [isReplying, setIsReplying] = useState<boolean>(false);
-
-  const comments = await db.comment.findMany({
-    where: {
-      postId: postId,
-      replyToId: null,
-    },
-    include: {
-      author: true,
-      votes: true,
-      replyTo: true,
-      replies: {
-        include: {
-          author: true,
-          votes: true,
-        },
-      },
-    },
-  });
 
   const handleReply = () => {
     setIsReplying(true);

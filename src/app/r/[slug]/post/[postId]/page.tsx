@@ -63,6 +63,24 @@ const SubRedditPostPage = async ({
   const session = await getAuthSession();
   const isAuthor = session?.user.id === post?.authorId ?? cachedPost.authorId;
 
+  const comments = await db.comment.findMany({
+    where: {
+      postId: params.postId,
+      replyToId: null,
+    },
+    include: {
+      author: true,
+      votes: true,
+      replyTo: true,
+      replies: {
+        include: {
+          author: true,
+          votes: true,
+        },
+      },
+    },
+  });
+
   return (
     <div>
       <div className="h-full flex flex-col sm:flex-row items-center sm:items-start justify-between">
@@ -113,7 +131,10 @@ const SubRedditPostPage = async ({
             }
           >
             {/* @ts-expect-error Server Component */}
-            <CommentsSection postId={post?.id ?? cachedPost.id} />
+            <CommentsSection
+              postId={post?.id ?? cachedPost.id}
+              comments={comments}
+            />
           </Suspense>
         </div>
       </div>
@@ -124,17 +145,14 @@ const SubRedditPostPage = async ({
 function PostVoteShell() {
   return (
     <div className="flex items-center flex-col pr-6 w-20">
-      {/* upvote */}
       <div className={buttonVariants({ variant: "ghost" })}>
         <ArrowBigUp className="h-5 w-5 text-zinc-700" />
       </div>
 
-      {/* score */}
       <div className="text-center py-2 font-medium text-sm text-zinc-900">
         <Loader2 className="h-3 w-3 animate-spin" />
       </div>
 
-      {/* downvote */}
       <div className={buttonVariants({ variant: "ghost" })}>
         <ArrowBigDown className="h-5 w-5 text-zinc-700" />
       </div>
