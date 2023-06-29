@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/Button";
 import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Label } from "@/components/ui/Label";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
 import CreateSubComment from "@/components/commentComponents/CreateSubComment";
 
@@ -36,6 +35,11 @@ const PostComment: FC<PostCommentProps> = ({
   const router = useRouter();
   const { data: session } = useSession();
   const [isReplying, setIsReplying] = useState<boolean>(false);
+  const [isCommentSubmitted, setIsCommentSubmitted] = useState<boolean>(false);
+
+  const handleCancelReply = () => {
+    setIsReplying(false);
+  };
 
   return (
     <div ref={commentRef} className="flex flex-col ">
@@ -69,7 +73,7 @@ const PostComment: FC<PostCommentProps> = ({
         <Button
           onClick={() => {
             if (!session) return router.push("/sign-in");
-            setIsReplying(true);
+            setIsReplying((prevIsReplying) => !prevIsReplying);
             if (onReply) onReply();
           }}
           variant="ghost"
@@ -80,14 +84,14 @@ const PostComment: FC<PostCommentProps> = ({
           Reply
         </Button>
 
-        {isReplying ? (
+        {isReplying && !isCommentSubmitted ? (
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="comment">Your comment</Label>
             <div className="mt-2">
               <CreateSubComment
                 postId={postId}
                 replyToId={comment.replyToId ?? comment.id}
-                onCancelReply={() => setIsReplying(false)}
+                onCancelReply={handleCancelReply}
+                isReplying={isReplying}
               />
             </div>
           </div>

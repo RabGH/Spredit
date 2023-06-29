@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useRef, useCallback, useEffect } from "react";
+import { FC, useRef, useCallback, useEffect } from "react";
 import { Label } from "../ui/Label";
 import { Button } from "../ui/Button";
 import { useMutation } from "@tanstack/react-query";
@@ -15,11 +15,15 @@ import { uploadFiles } from "@/lib/uploadthing";
 interface CreatePostCommentProps {
   postId: string;
   disabled?: boolean;
+  onCancelReply: () => void;
+  onCommentSubmit: () => void;
 }
 
 const CreatePostComment: FC<CreatePostCommentProps> = ({
   postId,
   disabled,
+  onCancelReply,
+  onCommentSubmit,
 }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
@@ -90,6 +94,13 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
     };
   }, [initializeEditor]);
 
+  useEffect(() => {
+    if (disabled) {
+      ref.current?.destroy();
+      initializeEditor();
+    }
+  }, [disabled, initializeEditor]);
+
   const { mutate: comment, isLoading } = useMutation({
     mutationFn: async ({ postId, text }: CommentRequest) => {
       const payload: CommentRequest = {
@@ -119,6 +130,10 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
     onSuccess: () => {
       ref.current?.clear();
       router.refresh();
+
+      return toast({
+        description: "Your comment has been posted.",
+      });
     },
   });
 
@@ -139,7 +154,7 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
       <div className="mt-2">
         <div
           id="editor"
-          className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 p-2"
+          className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
         />
         <div className="mt-2 flex justify-end">
           <Button isLoading={isLoading} onClick={onSubmit} disabled={disabled}>

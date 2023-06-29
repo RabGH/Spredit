@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { FC, useState, useRef, useCallback, useEffect } from "react";
+import { FC, useRef, useCallback, useEffect, useState } from "react";
 import { Label } from "../ui/Label";
 import { Button } from "../ui/Button";
 import { useMutation } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ interface CreateSubCommentProps {
   postId: string;
   replyToId?: string;
   onCancelReply?: () => void;
+  isReplying: boolean;
 }
 
 const CreateSubComment: FC<CreateSubCommentProps> = ({
@@ -26,6 +27,7 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
+  const [isCommentSubmitted, setIsCommentSubmitted] = useState(false);
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -122,6 +124,9 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
     onSuccess: () => {
       ref.current?.clear();
       router.refresh();
+      return toast({
+        description: "Your sub-comment has been posted.",
+      });
     },
   });
 
@@ -134,10 +139,13 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
       replyToId,
     };
 
-    comment(payload);
+    await comment(payload);
+    setIsCommentSubmitted(true);
+    onCancel();
   }
 
   function onCancel() {
+    setIsCommentSubmitted(false);
     if (onCancelReply) {
       onCancelReply();
     }
@@ -149,7 +157,7 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
       <div className="mt-2">
         <div
           id="editor"
-          className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 p-2"
+          className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
         />
         <div className="mt-2 flex justify-end">
           <Button isLoading={isLoading} onClick={onSubmit} className="mr-2">

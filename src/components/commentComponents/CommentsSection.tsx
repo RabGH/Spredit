@@ -5,8 +5,8 @@ import axios from "axios";
 import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
 import CreatePostComment from "./CreatePostComment";
-import EditorOutput from "../editorComponents/EditorOutput";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -28,10 +28,19 @@ interface CommentsSectionProps {
 const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<ExtendedComment[]>([]);
   const [isReplying, setIsReplying] = useState<boolean>(false);
+  const [isCommentSubmitted, setIsCommentSubmitted] = useState<boolean>(false);
   const { data: session } = useSession();
+  const router = useRouter();
 
   const handleReply = () => {
     setIsReplying(true);
+    setIsCommentSubmitted(false);
+  };
+
+  const handleCancelReply = () => {
+    setIsReplying(false);
+    setIsCommentSubmitted(false);
+    router.refresh();
   };
 
   useEffect(() => {
@@ -41,20 +50,26 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
           `/api/posts/comments?postId=${postId}`
         );
         setComments(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
     };
 
     fetchData();
-  }, [postId]);
+  }, [postId, comments]);
 
   return (
     <div className="flex flex-col gap-y-4 mt-4">
       <hr className="w-full h-px my-6" />
 
-      <CreatePostComment postId={postId} disabled={isReplying} />
+      {isReplying ? null : (
+        <CreatePostComment
+          postId={postId}
+          disabled={isReplying}
+          onCancelReply={handleCancelReply}
+          onCommentSubmit={() => setIsCommentSubmitted(true)}
+        />
+      )}
 
       <div className="flex flex-col gap-y-6 mt-4">
         {comments
@@ -100,9 +115,6 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
                           )}
                           postId={postId}
                         />
-                      </div>
-                      <div className="ml-6">
-                        <EditorOutput content={replyComment.text} />
                       </div>
                     </div>
                   ))}
