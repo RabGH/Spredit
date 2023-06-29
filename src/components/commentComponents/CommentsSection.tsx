@@ -6,6 +6,7 @@ import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
 import CreatePostComment from "./CreatePostComment";
 import EditorOutput from "../editorComponents/EditorOutput";
+import { useSession } from "next-auth/react";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -21,13 +22,13 @@ type ReplyComment = Comment & {
 
 interface CommentsSectionProps {
   postId: string;
+  session: any;
 }
 
-const CommentsSection = async ({ postId }: CommentsSectionProps) => {
-  const sessionResponse = await axios.get("/api/getAuthSession");
-  const session = sessionResponse.data;
+const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<ExtendedComment[]>([]);
   const [isReplying, setIsReplying] = useState<boolean>(false);
+  const { data: session } = useSession();
 
   const handleReply = () => {
     setIsReplying(true);
@@ -37,9 +38,10 @@ const CommentsSection = async ({ postId }: CommentsSectionProps) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `/api/posts/comments/route?postId=${postId}`
+          `/api/posts/comments?postId=${postId}`
         );
         setComments(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
