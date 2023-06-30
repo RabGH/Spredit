@@ -27,7 +27,7 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
-  const [isCommentSubmitted, setIsCommentSubmitted] = useState(false);
+  const [isReplying, setIsReplying] = useState<boolean>(false);
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -140,12 +140,13 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
     };
 
     await comment(payload);
-    setIsCommentSubmitted(true);
+    router.refresh();
     onCancel();
   }
 
   function onCancel() {
-    setIsCommentSubmitted(false);
+    router.refresh();
+    setIsReplying(false);
     if (onCancelReply) {
       onCancelReply();
     }

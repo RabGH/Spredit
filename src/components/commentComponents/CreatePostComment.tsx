@@ -14,16 +14,12 @@ import { uploadFiles } from "@/lib/uploadthing";
 
 interface CreatePostCommentProps {
   postId: string;
-  disabled?: boolean;
-  onCancelReply: () => void;
-  onCommentSubmit: () => void;
+  isReplying: boolean;
 }
 
 const CreatePostComment: FC<CreatePostCommentProps> = ({
   postId,
-  disabled,
-  onCancelReply,
-  onCommentSubmit,
+  isReplying,
 }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
@@ -87,19 +83,20 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
   }, []);
 
   useEffect(() => {
+    if (isReplying) {
+      initializeEditor();
+    } else {
+      ref.current?.clear();
+    }
+  }, [isReplying, initializeEditor]);
+
+  useEffect(() => {
     initializeEditor();
     return () => {
       ref.current?.destroy();
       ref.current = undefined;
     };
   }, [initializeEditor]);
-
-  useEffect(() => {
-    if (disabled) {
-      ref.current?.destroy();
-      initializeEditor();
-    }
-  }, [disabled, initializeEditor]);
 
   const { mutate: comment, isLoading } = useMutation({
     mutationFn: async ({ postId, text }: CommentRequest) => {
@@ -145,8 +142,13 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
       text: blocks,
     };
 
+    router.refresh();
     comment(payload);
   }
+
+  const handleCancelReply = useCallback(() => {
+    initializeEditor();
+  }, [initializeEditor]);
 
   return (
     <div className="grid w-full gap-1.5">
@@ -157,7 +159,7 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
           className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
         />
         <div className="mt-2 flex justify-end">
-          <Button isLoading={isLoading} onClick={onSubmit} disabled={disabled}>
+          <Button isLoading={isLoading} onClick={onSubmit}>
             Post
           </Button>
         </div>

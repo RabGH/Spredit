@@ -43,7 +43,6 @@ const CommentVotes: FC<CommentVotesProps> = ({
       if (voteType === "UP") setVotesAmt((prev) => prev - 1);
       else setVotesAmt((prev) => prev + 1);
 
-      // reset current vote
       setCurrentVote(prevVote);
 
       if (err instanceof AxiosError) {
@@ -54,7 +53,7 @@ const CommentVotes: FC<CommentVotesProps> = ({
 
       return toast({
         title: "Something went wrong.",
-        description: "Your comment was not registered. Please try again.",
+        description: "Your vote comment was not registered. Please try again.",
         variant: "destructive",
       });
     },

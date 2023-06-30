@@ -28,19 +28,11 @@ interface CommentsSectionProps {
 const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<ExtendedComment[]>([]);
   const [isReplying, setIsReplying] = useState<boolean>(false);
-  const [isCommentSubmitted, setIsCommentSubmitted] = useState<boolean>(false);
   const { data: session } = useSession();
   const router = useRouter();
 
   const handleReply = () => {
     setIsReplying(true);
-    setIsCommentSubmitted(false);
-  };
-
-  const handleCancelReply = () => {
-    setIsReplying(false);
-    setIsCommentSubmitted(false);
-    router.refresh();
   };
 
   useEffect(() => {
@@ -63,12 +55,7 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
       <hr className="w-full h-px my-6" />
 
       {isReplying ? null : (
-        <CreatePostComment
-          postId={postId}
-          disabled={isReplying}
-          onCancelReply={handleCancelReply}
-          onCommentSubmit={() => setIsCommentSubmitted(true)}
-        />
+        <CreatePostComment postId={postId} isReplying={isReplying} />
       )}
 
       <div className="flex flex-col gap-y-6 mt-4">

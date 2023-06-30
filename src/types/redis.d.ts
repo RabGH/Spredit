@@ -11,4 +11,4 @@ export type CachedPost = {
   updatedAt: Date;
   comments: Comment[];
 };
-// addded post and updatedAt
+

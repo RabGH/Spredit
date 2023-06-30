@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useCallback, useRef, useState } from "react";
 import { UserAvatar } from "@/components/userComponents/UserAvatar";
 import { Comment, CommentVote, User } from "@prisma/client";
 import { formatTimeToNow } from "@/lib/utils";
@@ -35,11 +35,14 @@ const PostComment: FC<PostCommentProps> = ({
   const router = useRouter();
   const { data: session } = useSession();
   const [isReplying, setIsReplying] = useState<boolean>(false);
-  const [isCommentSubmitted, setIsCommentSubmitted] = useState<boolean>(false);
 
-  const handleCancelReply = () => {
-    setIsReplying(false);
-  };
+  // const handleCancelReply = () => {
+  //   setIsReplying(false);
+  // };
+
+  const handleCancelReply = useCallback(() => {
+    window.location.reload();
+  }, []);
 
   return (
     <div ref={commentRef} className="flex flex-col ">
@@ -84,7 +87,7 @@ const PostComment: FC<PostCommentProps> = ({
           Reply
         </Button>
 
-        {isReplying && !isCommentSubmitted ? (
+        {isReplying ? (
           <div className="grid w-full gap-1.5">
             <div className="mt-2">
               <CreateSubComment
