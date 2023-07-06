@@ -19,15 +19,10 @@ interface CreateSubCommentProps {
   isReplying: boolean;
 }
 
-const CreateSubComment: FC<CreateSubCommentProps> = ({
-  postId,
-  replyToId,
-  onCancelReply,
-}) => {
+const CreateSubComment: FC<CreateSubCommentProps> = ({ postId, replyToId }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
-  const [isReplying, setIsReplying] = useState<boolean>(false);
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -124,6 +119,7 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
     onSuccess: () => {
       ref.current?.clear();
       router.refresh();
+      window.location.reload();
       return toast({
         description: "Your sub-comment has been posted.",
       });
@@ -144,13 +140,9 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({
     onCancel();
   }
 
-  function onCancel() {
-    router.refresh();
-    setIsReplying(false);
-    if (onCancelReply) {
-      onCancelReply();
-    }
-  }
+  const onCancel = useCallback(() => {
+    window.location.reload();
+  }, []);
 
   return (
     <div className="grid w-full gap-1.5">

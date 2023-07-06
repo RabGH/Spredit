@@ -16,12 +16,12 @@ export async function PATCH(req: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const comment = await db.post.findUnique({
-      where: { id: commentId },
-    });
-    if (!comment || commentId.authorId !== session.user.id) {
-      return new Response("Forbidden", { status: 403 });
-    }
+    // const comment = await db.post.findUnique({
+    //   where: { id: commentId },
+    // });
+    // if (!comment || comment.authorId !== session.user.id) {
+    //   return new Response("Forbidden", { status: 403 });
+    // }
 
     await db.comment.update({
       where: { id: commentId },

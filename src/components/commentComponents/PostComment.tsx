@@ -36,14 +36,13 @@ const PostComment: FC<PostCommentProps> = ({
   const router = useRouter();
   const { data: session } = useSession();
   const [isReplying, setIsReplying] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const isAuthor = session?.user?.id === comment.author.id;
 
-  // const handleCancelReply = () => {
-  //   setIsReplying(false);
-  // };
-
-  const handleCancelReply = useCallback(() => {
-    window.location.reload();
-  }, []);
+  const handleEditComment = useCallback(() => {
+    setIsEditing(true);
+    if (onReply) onReply();
+  }, [onReply]);
 
   return (
     <div ref={commentRef} className="flex flex-col ">
@@ -88,22 +87,28 @@ const PostComment: FC<PostCommentProps> = ({
           Reply
         </Button>
 
-        <EditPostComment
-          commentId={comment.id}
-          isAuthor={comment.author.id === session?.user?.id}
-        />
+        {isAuthor && (
+          <Button
+            onClick={handleEditComment}
+            variant="ghost"
+            size="xs"
+            aria-label="edit"
+          >
+            <MessageSquare className="h-4 w-4 mr-1.5" />
+            Edit
+          </Button>
+        )}
 
-        {isReplying ? (
-          <div className="grid w-full gap-1.5">
-            <div className="mt-2">
-              <CreateSubComment
-                postId={postId}
-                replyToId={comment.replyToId ?? comment.id}
-                onCancelReply={handleCancelReply}
-                isReplying={isReplying}
-              />
-            </div>
-          </div>
+        {isReplying && !isEditing ? (
+          <CreateSubComment
+            postId={postId}
+            replyToId={comment.replyToId ?? comment.id}
+            isReplying={isReplying}
+          />
+        ) : null}
+
+        {isEditing ? (
+          <EditPostComment comment={comment} commentId={comment.id} />
         ) : null}
       </div>
     </div>

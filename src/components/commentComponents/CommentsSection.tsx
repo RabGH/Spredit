@@ -6,7 +6,6 @@ import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
 import CreatePostComment from "./CreatePostComment";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -29,7 +28,6 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<ExtendedComment[]>([]);
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const { data: session } = useSession();
-  const router = useRouter();
 
   const handleReply = () => {
     setIsReplying(true);
