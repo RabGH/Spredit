@@ -42,11 +42,7 @@ const PostComment: FC<PostCommentProps> = ({
 
   const handleEditComment = useCallback(() => {
     setIsEditing(true);
-    if (onReply) onReply();
-  }, [onReply]);
-
-  const handleEditSubComment = useCallback(() => {
-    setIsEditing(true);
+    setIsReplying(false);
     if (onReply) onReply();
   }, [onReply]);
 
@@ -113,19 +109,13 @@ const PostComment: FC<PostCommentProps> = ({
           />
         ) : null}
 
-        {isEditing ? (
-          <div>
-            {isReplying ? (
-              <EditSubComment
-                commentId={comment.id}
-                comment={comment}
-                replyToId={comment.replyToId}
-              />
-            ) : (
-              <EditPostComment comment={comment} commentId={comment.id} />
-            )}
-          </div>
-        ) : null}
+        <EditPostComment comment={comment} commentId={comment.id} />
+
+        <EditSubComment
+          commentId={comment.id}
+          comment={comment}
+          replyToId={comment.replyToId ?? comment.id}
+        />
       </div>
     </div>
   );
