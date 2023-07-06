@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Comment, CommentVote, User } from "@prisma/client";
 import PostComment from "./PostComment";
-import CreatePostComment from "./CreatePostComment";
+import CreatePostComment from "./postComment/CreatePostComment";
 import { useSession } from "next-auth/react";
 
 type ExtendedComment = Comment & {

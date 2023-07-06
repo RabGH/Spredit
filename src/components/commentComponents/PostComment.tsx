@@ -8,8 +8,9 @@ import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
-import CreateSubComment from "@/components/commentComponents/CreateSubComment";
-import EditPostComment from "./EditPostComment";
+import CreateSubComment from "@/components/commentComponents/subComment/CreateSubComment";
+import EditPostComment from "@/components/commentComponents/postComment/EditPostComment";
+import EditSubComment from "@/components/commentComponents/subComment/EditSubComment";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -40,6 +41,11 @@ const PostComment: FC<PostCommentProps> = ({
   const isAuthor = session?.user?.id === comment.author.id;
 
   const handleEditComment = useCallback(() => {
+    setIsEditing(true);
+    if (onReply) onReply();
+  }, [onReply]);
+
+  const handleEditSubComment = useCallback(() => {
     setIsEditing(true);
     if (onReply) onReply();
   }, [onReply]);
@@ -89,7 +95,7 @@ const PostComment: FC<PostCommentProps> = ({
 
         {isAuthor && (
           <Button
-            onClick={handleEditComment}
+            onClick={isReplying ? handleEditSubComment : handleEditComment}
             variant="ghost"
             size="xs"
             aria-label="edit"
@@ -108,7 +114,17 @@ const PostComment: FC<PostCommentProps> = ({
         ) : null}
 
         {isEditing ? (
-          <EditPostComment comment={comment} commentId={comment.id} />
+          <div>
+            {isReplying ? (
+              <EditSubComment
+                commentId={comment.id}
+                comment={comment}
+                replyToId={comment.replyToId}
+              />
+            ) : (
+              <EditPostComment comment={comment} commentId={comment.id} />
+            )}
+          </div>
         ) : null}
       </div>
     </div>

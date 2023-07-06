@@ -8,7 +8,7 @@ export async function PATCH(req: Request) {
     const body = await req.json();
     console.log(body);
 
-    const { commentId, text, replyToId } = EditCommentValidator.parse(body);
+    const { text, replyToId } = EditCommentValidator.parse(body);
 
     const session = await getAuthSession();
 
@@ -24,7 +24,7 @@ export async function PATCH(req: Request) {
     // }
 
     await db.comment.update({
-      where: { id: commentId },
+      where: { id: replyToId },
       data: {
         text: text,
       },
@@ -39,7 +39,7 @@ export async function PATCH(req: Request) {
     }
 
     return new Response(
-      "Could not update comment at this time, please try again later",
+      "Could not update sub-comment at this time, please try again later",
       { status: 500 }
     );
   }

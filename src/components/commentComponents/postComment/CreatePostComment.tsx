@@ -1,8 +1,8 @@
 "use client";
 
 import { FC, useRef, useCallback, useEffect } from "react";
-import { Label } from "../ui/Label";
-import { Button } from "../ui/Button";
+import { Label } from "../../ui/Label";
+import { Button } from "../../ui/Button";
 import { useMutation } from "@tanstack/react-query";
 import { CommentRequest } from "@/lib/validators/comment";
 import axios, { AxiosError } from "axios";

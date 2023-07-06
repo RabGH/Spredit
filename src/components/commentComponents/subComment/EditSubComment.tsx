@@ -1,8 +1,8 @@
 "use client";
 
 import { FC, useRef, useCallback, useEffect, useState } from "react";
-import { Label } from "../ui/Label";
-import { Button } from "../ui/Button";
+import { Label } from "../../ui/Label";
+import { Button } from "../../ui/Button";
 import { useMutation } from "@tanstack/react-query";
 import {
   EditCommentRequest,
@@ -19,12 +19,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { jsonToOutputData } from "@/lib/json-to-output-data";
 import { Comment } from "@prisma/client";
 
-interface EditCommentProps {
-  comment?: Comment | null;
+interface EditSubCommentProps {
   commentId: string | undefined;
+  comment?: Comment | null;
+  replyToId: string;
 }
 
-const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
+const EditSubComment: FC<EditSubCommentProps> = ({
+  comment,
+  commentId,
+  replyToId,
+}) => {
   const { reset } = useForm<EditCommentRequest>({
     resolver: zodResolver(EditCommentValidator),
     defaultValues: {
@@ -54,7 +59,7 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
         onReady() {
           ref.current = editor;
         },
-        placeholder: "Edit Comment here...",
+        placeholder: "Edit Sub-comment here...",
         inlineToolbar: true,
         data: jsonToOutputData(comment?.text as any),
         tools: {
@@ -108,17 +113,22 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
     };
   }, [initializeEditor]);
 
-  const { mutate: updateComment, isLoading } = useMutation({
+  const { mutate: updateSubComment, isLoading } = useMutation({
     mutationFn: async ({ commentId, text }: EditCommentRequest) => {
       const payload: EditCommentRequest = {
         commentId,
         text,
+        replyToId,
       };
 
-      const { data } = await axios.patch(`/api/subreddit/post/comment/edit`, {
-        commentId,
-        ...payload,
-      });
+      const { data } = await axios.patch(
+        `/api/subreddit/post/comment/editSubComment`,
+        {
+          commentId,
+          replyToId,
+          ...payload,
+        }
+      );
       return data;
     },
     onError: (err: any) => {
@@ -130,7 +140,8 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
 
       return toast({
         title: "There was a problem.",
-        description: "Your comment was not updated, please try again later.",
+        description:
+          "Your sub-comment was not updated, please try again later.",
         variant: "destructive",
       });
     },
@@ -139,7 +150,7 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
       router.refresh();
       window.location.reload();
       return toast({
-        description: "Your comment has been edited.",
+        description: "Your sub-comment has been edited.",
       });
     },
   });
@@ -157,7 +168,7 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
     };
 
     router.refresh();
-    updateComment(payload);
+    updateSubComment(payload);
   };
 
   const onCancel = useCallback(() => {
@@ -166,7 +177,7 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
 
   return (
     <div className="grid w-full gap-1.5">
-      <Label htmlFor="comment">Edit your comment</Label>
+      <Label htmlFor="comment">Edit your sub-comment</Label>
       <div className="mt-2">
         <div
           id="editor"
@@ -183,4 +194,4 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
   );
 };
 
-export default EditComment;
+export default EditSubComment;
