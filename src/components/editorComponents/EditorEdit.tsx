@@ -57,7 +57,7 @@ const EditorEdit: FC<EditorProps> = ({ post, postId }) => {
         onReady() {
           ref.current = editor;
         },
-        placeholder: "Type here to write your post...",
+        placeholder: "Edit your post here...",
         inlineToolbar: true,
 
         data: jsonToOutputData(post?.content as any),

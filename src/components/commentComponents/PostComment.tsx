@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
 import CreateSubComment from "@/components/commentComponents/CreateSubComment";
+import EditPostComment from "./EditPostComment";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -86,6 +87,11 @@ const PostComment: FC<PostCommentProps> = ({
           <MessageSquare className="h-4 w-4 mr-1.5" />
           Reply
         </Button>
+
+        <EditPostComment
+          commentId={comment.id}
+          isAuthor={comment.author.id === session?.user?.id}
+        />
 
         {isReplying ? (
           <div className="grid w-full gap-1.5">
