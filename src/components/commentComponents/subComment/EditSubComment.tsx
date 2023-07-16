@@ -95,7 +95,7 @@ const EditSubComment: FC<EditSubCommentProps> = ({
         },
       });
     }
-  }, []);
+  }, [comment?.text]);
 
   useEffect(() => {
     if (comment) {
@@ -111,7 +111,7 @@ const EditSubComment: FC<EditSubCommentProps> = ({
       ref.current?.destroy();
       ref.current = undefined;
     };
-  }, [initializeEditor]);
+  }, []);
 
   const { mutate: updateSubComment, isLoading } = useMutation({
     mutationFn: async ({ commentId, text }: EditCommentRequest) => {

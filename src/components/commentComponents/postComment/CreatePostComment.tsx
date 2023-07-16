@@ -15,11 +15,13 @@ import { uploadFiles } from "@/lib/uploadthing";
 interface CreatePostCommentProps {
   postId: string;
   isReplying: boolean;
+  isEditing: boolean;
 }
 
 const CreatePostComment: FC<CreatePostCommentProps> = ({
   postId,
   isReplying,
+  isEditing,
 }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
@@ -83,12 +85,12 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
   }, []);
 
   useEffect(() => {
-    if (isReplying) {
+    if (isReplying || isEditing) {
       initializeEditor();
     } else {
       ref.current?.clear();
     }
-  }, [isReplying, initializeEditor]);
+  }, [isReplying, isEditing, initializeEditor]);
 
   useEffect(() => {
     initializeEditor();
@@ -145,10 +147,9 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
     router.refresh();
     comment(payload);
   }
-
-  const handleCancelReply = useCallback(() => {
-    initializeEditor();
-  }, [initializeEditor]);
+  if (isEditing) {
+    return null;
+  }
 
   return (
     <div className="grid w-full gap-1.5">
@@ -161,6 +162,9 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
         <div className="mt-2 flex justify-end">
           <Button isLoading={isLoading} onClick={onSubmit}>
             Post
+          </Button>
+          <Button onClick={() => router.refresh()} className="ml-2">
+            Clear
           </Button>
         </div>
       </div>

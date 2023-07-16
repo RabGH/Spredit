@@ -22,9 +22,10 @@ import { Comment } from "@prisma/client";
 interface EditCommentProps {
   comment?: Comment | null;
   commentId: string | undefined;
+  onEdit?: () => void;
 }
 
-const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
+const EditComment: FC<EditCommentProps> = ({ comment, commentId, onEdit }) => {
   const { reset } = useForm<EditCommentRequest>({
     resolver: zodResolver(EditCommentValidator),
     defaultValues: {
@@ -166,6 +167,12 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
   const onCancel = useCallback(() => {
     window.location.reload();
   }, []);
+
+  useEffect(() => {
+    if (onEdit) {
+      onEdit();
+    }
+  }, [onEdit]);
 
   return (
     <div className="grid w-full gap-1.5">

@@ -26,11 +26,21 @@ interface CommentsSectionProps {
 
 const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<ExtendedComment[]>([]);
-  const [isReplying, setIsReplying] = useState<boolean>(false);
   const { data: session } = useSession();
+  const [isReplying, setIsReplying] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
 
-  const handleReply = () => {
+  const handleReply = (commentId: string) => {
     setIsReplying(true);
+    setIsEditing(false);
+    setActiveCommentId(commentId);
+  };
+
+  const handleEdit = (commentId: string) => {
+    setIsEditing(true);
+    setIsReplying(false);
+    setActiveCommentId(commentId);
   };
 
   useEffect(() => {
@@ -52,8 +62,12 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
     <div className="flex flex-col gap-y-4 mt-4">
       <hr className="w-full h-px my-6" />
 
-      {isReplying ? null : (
-        <CreatePostComment postId={postId} isReplying={isReplying} />
+      {!activeCommentId && (
+        <CreatePostComment
+          postId={postId}
+          isReplying={isReplying}
+          isEditing={isEditing}
+        />
       )}
 
       <div className="flex flex-col gap-y-6 mt-4">
@@ -82,6 +96,7 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
                     currentVote={topLevelCommentVote}
                     postId={postId}
                     onReply={handleReply}
+                    onEdit={handleEdit}
                   />
                 </div>
                 <div className="ml-6">
@@ -99,6 +114,8 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
                             (vote) => vote.userId === session?.user.id
                           )}
                           postId={postId}
+                          onEdit={handleEdit}
+                          onReply={handleReply}
                         />
                       </div>
                     </div>

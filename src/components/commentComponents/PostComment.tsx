@@ -22,8 +22,8 @@ interface PostCommentProps {
   votesAmt: number;
   currentVote: CommentVote | undefined;
   postId: string;
-  onReply?: () => void;
-  onCancelReply?: () => void;
+  onReply?: (commentId: string) => void;
+  onEdit?: (commentId: string, replyToId: string) => void;
 }
 
 const PostComment: FC<PostCommentProps> = ({
@@ -32,6 +32,7 @@ const PostComment: FC<PostCommentProps> = ({
   currentVote,
   postId,
   onReply,
+  onEdit,
 }) => {
   const commentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -40,14 +41,20 @@ const PostComment: FC<PostCommentProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const isAuthor = session?.user?.id === comment.author.id;
 
+  const handleReplyComment = () => {
+    setIsReplying(true);
+    setIsEditing(false);
+    if (onReply) onReply(comment.id);
+  };
+
   const handleEditComment = useCallback(() => {
     setIsEditing(true);
     setIsReplying(false);
-    if (onReply) onReply();
-  }, [onReply]);
+    if (onEdit) onEdit(comment.id, comment.replyToId ?? comment.id);
+  }, [comment.id, comment.replyToId, onEdit]);
 
   return (
-    <div ref={commentRef} className="flex flex-col ">
+    <div ref={commentRef} className="flex flex-col">
       <div className="flex items-center">
         <UserAvatar
           user={{
@@ -78,8 +85,7 @@ const PostComment: FC<PostCommentProps> = ({
         <Button
           onClick={() => {
             if (!session) return router.push("/sign-in");
-            setIsReplying((prevIsReplying) => !prevIsReplying);
-            if (onReply) onReply();
+            handleReplyComment();
           }}
           variant="ghost"
           size="xs"
@@ -91,7 +97,7 @@ const PostComment: FC<PostCommentProps> = ({
 
         {isAuthor && (
           <Button
-            onClick={isReplying ? handleEditSubComment : handleEditComment}
+            onClick={handleEditComment}
             variant="ghost"
             size="xs"
             aria-label="edit"
@@ -101,7 +107,7 @@ const PostComment: FC<PostCommentProps> = ({
           </Button>
         )}
 
-        {isReplying && !isEditing ? (
+        {isReplying ? (
           <CreateSubComment
             postId={postId}
             replyToId={comment.replyToId ?? comment.id}
@@ -109,13 +115,17 @@ const PostComment: FC<PostCommentProps> = ({
           />
         ) : null}
 
-        <EditPostComment comment={comment} commentId={comment.id} />
+        {isEditing && onEdit ? (
+          <EditPostComment comment={comment} commentId={comment.id} />
+        ) : null}
 
-        <EditSubComment
-          commentId={comment.id}
-          comment={comment}
-          replyToId={comment.replyToId ?? comment.id}
-        />
+        {comment.commentId === comment.id && (
+          <EditSubComment
+            commentId={comment.id}
+            comment={comment}
+            replyToId={comment.replyToId ?? comment.id}
+          />
+        )}
       </div>
     </div>
   );
