@@ -39,6 +39,7 @@ const PostComment: FC<PostCommentProps> = ({
   const { data: session } = useSession();
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isUIVisible, setIsUIVisible] = useState<boolean>(true);
   const isAuthor = session?.user?.id === comment.author.id;
 
   const handleReplyComment = () => {
@@ -54,7 +55,10 @@ const PostComment: FC<PostCommentProps> = ({
   }, [comment.id, comment.replyToId, onEdit]);
 
   return (
-    <div ref={commentRef} className="flex flex-col">
+    <div
+      ref={commentRef}
+      className={`flex flex-col ${isUIVisible ? "" : "hidden"}`}
+    >
       <div className="flex items-center">
         <UserAvatar
           user={{
@@ -107,7 +111,7 @@ const PostComment: FC<PostCommentProps> = ({
           </Button>
         )}
 
-        {isReplying ? (
+        {isReplying && onReply ? (
           <CreateSubComment
             postId={postId}
             replyToId={comment.replyToId ?? comment.id}
@@ -119,13 +123,13 @@ const PostComment: FC<PostCommentProps> = ({
           <EditPostComment comment={comment} commentId={comment.id} />
         ) : null}
 
-        {comment.commentId === comment.id && (
+        {comment.commentId === comment.id && onEdit ? (
           <EditSubComment
             commentId={comment.id}
             comment={comment}
             replyToId={comment.replyToId ?? comment.id}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );

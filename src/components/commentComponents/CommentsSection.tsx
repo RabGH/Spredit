@@ -29,18 +29,15 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const { data: session } = useSession();
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
 
   const handleReply = (commentId: string) => {
     setIsReplying(true);
     setIsEditing(false);
-    setActiveCommentId(commentId);
   };
 
   const handleEdit = (commentId: string) => {
     setIsEditing(true);
     setIsReplying(false);
-    setActiveCommentId(commentId);
   };
 
   useEffect(() => {
@@ -62,7 +59,7 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
     <div className="flex flex-col gap-y-4 mt-4">
       <hr className="w-full h-px my-6" />
 
-      {!activeCommentId && (
+      {isReplying || isEditing ? null : (
         <CreatePostComment
           postId={postId}
           isReplying={isReplying}

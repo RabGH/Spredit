@@ -23,6 +23,8 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({ postId, replyToId }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
+  const [isReplyingOpen, setIsReplyingOpen] = useState<boolean>(true);
+  const [isUIOpen, setIsUIOpen] = useState<boolean>(true);
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -141,24 +143,32 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({ postId, replyToId }) => {
   }
 
   const onCancel = useCallback(() => {
-    window.location.reload();
+    setIsReplyingOpen(false);
+    setIsUIOpen(false);
   }, []);
 
   return (
     <div className="grid w-full gap-1.5">
-      <Label htmlFor="comment">Your comment</Label>
-      <div className="mt-2">
-        <div
-          id="editor"
-          className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
-        />
-        <div className="mt-2 flex justify-end">
-          <Button isLoading={isLoading} onClick={onSubmit} className="mr-2">
-            Post
-          </Button>
-          <Button onClick={onCancel}>Cancel</Button>
+      {isReplyingOpen && isUIOpen && (
+        <div className="w-full">
+          <Label htmlFor="comment">Create Sub-Comment</Label>
+          <div className="mt-2">
+            <div
+              id="editor-container"
+              className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
+            >
+              <div id="editor" className="min-h-[100px]" />
+            </div>
+
+            <div className="mt-2 flex justify-end">
+              <Button isLoading={isLoading} onClick={onSubmit} className="mr-2">
+                Post
+              </Button>
+              <Button onClick={onCancel}>Cancel</Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
