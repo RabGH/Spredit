@@ -146,24 +146,24 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({ postId, replyToId }) => {
   return (
     <div className="grid w-full gap-1.5">
       {isReplyingOpen && (
-      <div className="w-full">
-        <Label htmlFor="comment">Create Sub-Comment</Label>
-        <div className="mt-2">
-          <div
-            id="editor-container"
-            className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
-          >
-            <div id="editor" className="min-h-[100px]" />
-          </div>
+        <div className="w-full">
+          <Label htmlFor="comment">Create Sub-Comment</Label>
+          <div className="mt-2">
+            <div
+              id="editor-container"
+              className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
+            >
+              <div id="editor" className="min-h-[100px]" />
+            </div>
 
-          <div className="mt-2 flex justify-end">
-            <Button isLoading={isLoading} onClick={onSubmit} className="mr-2">
-              Post
-            </Button>
-            <Button onClick={onCancel}>Cancel</Button>
+            <div className="mt-2 flex justify-end">
+              <Button isLoading={isLoading} onClick={onSubmit} className="mr-2">
+                Post
+              </Button>
+              <Button onClick={onCancel}>Cancel</Button>
+            </div>
           </div>
         </div>
-      </div>
       )}
     </div>
   );

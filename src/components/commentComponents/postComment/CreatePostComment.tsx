@@ -16,9 +16,7 @@ interface CreatePostCommentProps {
   postId: string;
 }
 
-const CreatePostComment: FC<CreatePostCommentProps> = ({
-  postId,
-}) => {
+const CreatePostComment: FC<CreatePostCommentProps> = ({ postId }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
