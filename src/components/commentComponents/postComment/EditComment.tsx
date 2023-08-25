@@ -1,27 +1,42 @@
 "use client";
 
-import { FC, useRef, useCallback, useEffect } from "react";
+import { FC, useRef, useCallback, useEffect, useState } from "react";
 import { Label } from "../../ui/Label";
 import { Button } from "../../ui/Button";
 import { useMutation } from "@tanstack/react-query";
-import { CommentRequest } from "@/lib/validators/comment";
+import {
+  EditCommentRequest,
+  EditCommentValidator,
+} from "@/lib/validators/edit-comment";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/hooks/use-toast";
 import { useCustomToast } from "@/hooks/use-custom-toast";
 import { useRouter } from "next/navigation";
 import type EditorJS from "@editorjs/editorjs";
 import { uploadFiles } from "@/lib/uploadthing";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { jsonToOutputData } from "@/lib/json-to-output-data";
+import { Comment } from "@prisma/client";
 
-interface CreatePostCommentProps {
-  postId: string;
+interface EditCommentProps {
+  comment?: Comment | null;
+  commentId: string | undefined;
 }
 
-const CreatePostComment: FC<CreatePostCommentProps> = ({
-  postId,
-}) => {
+const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
+  const { reset } = useForm<EditCommentRequest>({
+    resolver: zodResolver(EditCommentValidator),
+    defaultValues: {
+      commentId,
+      text: null,
+    },
+  });
+
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
+  const [isEditorOpen, setIsEditorOpen] = useState<boolean>(true);
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -40,11 +55,9 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
         onReady() {
           ref.current = editor;
         },
-        placeholder: "What are your thoughts?",
+        placeholder: "Edit Comment here...",
         inlineToolbar: true,
-        data: {
-          blocks: [],
-        },
+        data: jsonToOutputData(comment?.text as any),
         tools: {
           header: Header,
           linkTool: {
@@ -81,6 +94,14 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
   }, []);
 
   useEffect(() => {
+    if (comment) {
+      reset({
+        text: comment.text,
+      });
+    }
+  }, [comment, reset]);
+
+  useEffect(() => {
     initializeEditor();
     return () => {
       ref.current?.destroy();
@@ -88,16 +109,19 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
     };
   }, [initializeEditor]);
 
-  const { mutate: comment, isLoading } = useMutation({
-    mutationFn: async ({ postId, text }: CommentRequest) => {
-      const payload: CommentRequest = {
-        postId,
+  const { mutate: updateComment, isLoading } = useMutation({
+    mutationFn: async ({ commentId, text }: EditCommentRequest) => {
+      const payload: EditCommentRequest = {
+        commentId,
         text,
       };
 
       const { data } = await axios.patch(
-        `/api/subreddit/post/comment`,
-        payload
+        `/api/subreddit/post/comment/editComment`,
+        {
+          commentId,
+          ...payload,
+        }
       );
       return data;
     },
@@ -110,7 +134,7 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
 
       return toast({
         title: "There was a problem.",
-        description: "Something went wrong, please try again.",
+        description: "Your comment was not updated, please try again later.",
         variant: "destructive",
       });
     },
@@ -119,42 +143,55 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
       router.refresh();
       window.location.reload();
       return toast({
-        description: "Your comment has been posted.",
+        description: "Your comment has been edited.",
       });
     },
   });
 
-  async function onSubmit() {
+  const onSubmit = async () => {
     const blocks = await ref.current?.save();
 
-    const payload: CommentRequest = {
-      postId,
+    if (comment?.id === undefined) {
+      return;
+    }
+
+    const payload: EditCommentRequest = {
+      commentId,
       text: blocks,
     };
 
     router.refresh();
-    comment(payload);
-  }
+    updateComment(payload);
+  };
+
+  const onCancel = useCallback(() => {
+    setIsEditorOpen(false);
+  }, []);
 
   return (
     <div className="grid w-full gap-1.5">
-      <Label htmlFor="comment">Your comment</Label>
-      <div className="mt-2">
-        <div
-          id="editor"
-          className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
-        />
-        <div className="mt-2 flex justify-end">
-          <Button isLoading={isLoading} onClick={onSubmit}>
-            Post
-          </Button>
-          <Button onClick={() => router.refresh()} className="ml-2">
-            Clear
-          </Button>
+      {isEditorOpen && (
+        <div className="w-full">
+          <Label htmlFor="comment">Edit your post-comment</Label>
+          <div className="mt-2">
+            <div
+              id="editor-container"
+              className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
+            >
+              <div id="editor" className="min-h-[100px]" />
+            </div>
+
+            <div className="mt-2 flex justify-end">
+              <Button isLoading={isLoading} onClick={onSubmit} className="mr-2">
+                Edit
+              </Button>
+              <Button onClick={onCancel}>Cancel</Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-export default CreatePostComment;
+export default EditComment;

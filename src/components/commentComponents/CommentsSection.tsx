@@ -27,17 +27,16 @@ interface CommentsSectionProps {
 const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<ExtendedComment[]>([]);
   const { data: session } = useSession();
-  const [isReplying, setIsReplying] = useState<boolean>(false);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [openEditorCommentId, setOpenEditorCommentId] = useState<string | null>(
+    null
+  );
 
   const handleReply = (commentId: string) => {
-    setIsReplying(true);
-    setIsEditing(false);
+    setOpenEditorCommentId(commentId);
   };
 
   const handleEdit = (commentId: string) => {
-    setIsEditing(true);
-    setIsReplying(false);
+    setOpenEditorCommentId(commentId);
   };
 
   useEffect(() => {
@@ -53,19 +52,15 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
     };
 
     fetchData();
-  }, [postId, comments]);
+  }, [postId]);
 
   return (
     <div className="flex flex-col gap-y-4 mt-4">
       <hr className="w-full h-px my-6" />
 
-      {isReplying || isEditing ? null : (
-        <CreatePostComment
-          postId={postId}
-          isReplying={isReplying}
-          isEditing={isEditing}
-        />
-      )}
+      {openEditorCommentId === null ? (
+        <CreatePostComment postId={postId} />
+      ) : null}
 
       <div className="flex flex-col gap-y-6 mt-4">
         {comments
@@ -92,8 +87,12 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
                     votesAmt={topLevelCommentVotesAmt}
                     currentVote={topLevelCommentVote}
                     postId={postId}
-                    onReply={handleReply}
-                    onEdit={handleEdit}
+                    onReply={(commentId) => {
+                      handleReply(commentId);
+                    }}
+                    onEdit={(commentId, replyToId) => {
+                      handleEdit(commentId);
+                    }}
                   />
                 </div>
                 <div className="ml-6">
@@ -111,8 +110,12 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
                             (vote) => vote.userId === session?.user.id
                           )}
                           postId={postId}
-                          onEdit={handleEdit}
-                          onReply={handleReply}
+                          onReply={(commentId) => {
+                            handleReply(commentId);
+                          }}
+                          onEdit={(commentId, replyToId) => {
+                            handleEdit(commentId);
+                          }}
                         />
                       </div>
                     </div>

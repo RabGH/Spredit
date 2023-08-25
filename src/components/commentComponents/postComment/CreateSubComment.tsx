@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useRef, useCallback, useEffect } from "react";
+import { FC, useRef, useCallback, useEffect, useState } from "react";
 import { Label } from "../../ui/Label";
 import { Button } from "../../ui/Button";
 import { useMutation } from "@tanstack/react-query";
@@ -12,16 +12,16 @@ import { useRouter } from "next/navigation";
 import type EditorJS from "@editorjs/editorjs";
 import { uploadFiles } from "@/lib/uploadthing";
 
-interface CreatePostCommentProps {
+interface CreateSubCommentProps {
   postId: string;
+  replyToId?: string;
 }
 
-const CreatePostComment: FC<CreatePostCommentProps> = ({
-  postId,
-}) => {
+const CreateSubComment: FC<CreateSubCommentProps> = ({ postId, replyToId }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
   const ref = useRef<EditorJS>();
+  const [isReplyingOpen, setIsReplyingOpen] = useState<boolean>(true);
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -89,10 +89,11 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
   }, [initializeEditor]);
 
   const { mutate: comment, isLoading } = useMutation({
-    mutationFn: async ({ postId, text }: CommentRequest) => {
+    mutationFn: async ({ postId, text, replyToId }: CommentRequest) => {
       const payload: CommentRequest = {
         postId,
         text,
+        replyToId,
       };
 
       const { data } = await axios.patch(
@@ -119,7 +120,7 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
       router.refresh();
       window.location.reload();
       return toast({
-        description: "Your comment has been posted.",
+        description: "Your sub-comment has been posted.",
       });
     },
   });
@@ -130,31 +131,42 @@ const CreatePostComment: FC<CreatePostCommentProps> = ({
     const payload: CommentRequest = {
       postId,
       text: blocks,
+      replyToId,
     };
 
+    await comment(payload);
     router.refresh();
-    comment(payload);
+    onCancel();
   }
+
+  const onCancel = useCallback(() => {
+    setIsReplyingOpen(false);
+  }, []);
 
   return (
     <div className="grid w-full gap-1.5">
-      <Label htmlFor="comment">Your comment</Label>
-      <div className="mt-2">
-        <div
-          id="editor"
-          className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
-        />
-        <div className="mt-2 flex justify-end">
-          <Button isLoading={isLoading} onClick={onSubmit}>
-            Post
-          </Button>
-          <Button onClick={() => router.refresh()} className="ml-2">
-            Clear
-          </Button>
+      {isReplyingOpen && (
+      <div className="w-full">
+        <Label htmlFor="comment">Create Sub-Comment</Label>
+        <div className="mt-2">
+          <div
+            id="editor-container"
+            className="min-h-[100px] border border-gray-500/50 rounded-lg hover:opacity-100 transition-opacity duration-300 px-8 py-2"
+          >
+            <div id="editor" className="min-h-[100px]" />
+          </div>
+
+          <div className="mt-2 flex justify-end">
+            <Button isLoading={isLoading} onClick={onSubmit} className="mr-2">
+              Post
+            </Button>
+            <Button onClick={onCancel}>Cancel</Button>
+          </div>
         </div>
       </div>
+      )}
     </div>
   );
 };
 
-export default CreatePostComment;
+export default CreateSubComment;

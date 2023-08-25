@@ -8,9 +8,8 @@ import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import EditorOutput from "@/components/editorComponents/EditorOutput";
-import CreateSubComment from "@/components/commentComponents/subComment/CreateSubComment";
-import EditPostComment from "@/components/commentComponents/postComment/EditPostComment";
-import EditSubComment from "@/components/commentComponents/subComment/EditSubComment";
+import CreateSubComment from "@/components/commentComponents/postComment/CreateSubComment";
+import EditComment from "@/components/commentComponents/postComment/EditComment";
 
 type ExtendedComment = Comment & {
   votes: CommentVote[];
@@ -39,26 +38,23 @@ const PostComment: FC<PostCommentProps> = ({
   const { data: session } = useSession();
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isUIVisible, setIsUIVisible] = useState<boolean>(true);
   const isAuthor = session?.user?.id === comment.author.id;
 
   const handleReplyComment = () => {
+    if (!session) return router.push("/sign-in");
     setIsReplying(true);
     setIsEditing(false);
-    if (onReply) onReply(comment.id);
+    onReply && onReply(comment.id);
   };
 
   const handleEditComment = useCallback(() => {
     setIsEditing(true);
     setIsReplying(false);
-    if (onEdit) onEdit(comment.id, comment.replyToId ?? comment.id);
+    onEdit && onEdit(comment.id, comment.replyToId ?? comment.id);
   }, [comment.id, comment.replyToId, onEdit]);
 
   return (
-    <div
-      ref={commentRef}
-      className={`flex flex-col ${isUIVisible ? "" : "hidden"}`}
-    >
+    <div ref={commentRef} className={`flex flex-col`}>
       <div className="flex items-center">
         <UserAvatar
           user={{
@@ -115,20 +111,11 @@ const PostComment: FC<PostCommentProps> = ({
           <CreateSubComment
             postId={postId}
             replyToId={comment.replyToId ?? comment.id}
-            isReplying={isReplying}
           />
         ) : null}
 
         {isEditing && onEdit ? (
-          <EditPostComment comment={comment} commentId={comment.id} />
-        ) : null}
-
-        {comment.commentId === comment.id && onEdit ? (
-          <EditSubComment
-            commentId={comment.id}
-            comment={comment}
-            replyToId={comment.replyToId ?? comment.id}
-          />
+          <EditComment comment={comment} commentId={comment.id} />
         ) : null}
       </div>
     </div>
