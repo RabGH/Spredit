@@ -43,6 +43,7 @@ const page = async ({ params }: PageProps) => {
         <Button type="submit" className="w-full" form="subreddit-post-form">
           Update Post
         </Button>
+        {/* Add Cancel Button */}
       </div>
     </div>
   );
