@@ -93,6 +93,7 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
                     onEdit={(commentId, replyToId) => {
                       handleEdit(commentId);
                     }}
+                    openEditorCommentId={openEditorCommentId}
                   />
                 </div>
                 <div className="ml-6">
@@ -116,6 +117,7 @@ const CommentsSection = ({ postId }: CommentsSectionProps) => {
                           onEdit={(commentId, replyToId) => {
                             handleEdit(commentId);
                           }}
+                          openEditorCommentId={openEditorCommentId}
                         />
                       </div>
                     </div>

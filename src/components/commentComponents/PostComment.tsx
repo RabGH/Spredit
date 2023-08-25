@@ -23,6 +23,7 @@ interface PostCommentProps {
   postId: string;
   onReply?: (commentId: string) => void;
   onEdit?: (commentId: string, replyToId: string) => void;
+  openEditorCommentId: string | null;
 }
 
 const PostComment: FC<PostCommentProps> = ({
@@ -32,6 +33,7 @@ const PostComment: FC<PostCommentProps> = ({
   postId,
   onReply,
   onEdit,
+  openEditorCommentId,
 }) => {
   const commentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -90,6 +92,9 @@ const PostComment: FC<PostCommentProps> = ({
           variant="ghost"
           size="xs"
           aria-label="reply"
+          disabled={
+            openEditorCommentId !== null && openEditorCommentId !== comment.id
+          }
         >
           <MessageSquare className="h-4 w-4 mr-1.5" />
           Reply
@@ -101,6 +106,9 @@ const PostComment: FC<PostCommentProps> = ({
             variant="ghost"
             size="xs"
             aria-label="edit"
+            disabled={
+              openEditorCommentId !== null && openEditorCommentId !== comment.id
+            }
           >
             <MessageSquare className="h-4 w-4 mr-1.5" />
             Edit
