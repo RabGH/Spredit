@@ -19,7 +19,6 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
     try {
       await signIn("google");
     } catch (error) {
-      // toast notification
       toast({
         title: "There was a problem signing you in.",
         description: "We couldn't sign you in. Please try again later.",

@@ -78,7 +78,8 @@ const UserNameForm: FC<UserNameFormProps> = ({ user }) => {
         <CardHeader>
           <CardTitle>You username</CardTitle>
           <CardDescription>
-            Enter a display name that will be shown on your profile.
+            Enter a display name that will be shown on your profile. Make sure
+            it has no spaces.
           </CardDescription>
         </CardHeader>
 
