@@ -61,7 +61,7 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
   return (
     <Command
       ref={commandRef}
-      className="relative rounded-lg border max-w-lg z-50 overflow-visible"
+      className="relative rounded-lg border sm:max-w-lg max-w-sm z-50 overflow-visible mb-4 sm:mt-0"
     >
       <CommandInput
         value={input}
@@ -69,7 +69,7 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
           setInput(text);
           debounceRequest();
         }}
-        placeholder="Search..."
+        placeholder="Search communities..."
         className="outline-none border-none focus:border-none focus:outline-none ring-0"
       />
 

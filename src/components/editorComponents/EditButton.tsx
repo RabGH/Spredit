@@ -20,7 +20,7 @@ const EditButton: FC<EditButtonProps> = ({
           href={`/r/${subredditName}/post/${postId}/edit`}
           className={buttonVariants({
             variant: "outline",
-            className: "px-4 py-2",
+            className: "mt-2",
           })}
         >
           Edit
