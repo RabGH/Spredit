@@ -141,6 +141,7 @@ const CreateSubComment: FC<CreateSubCommentProps> = ({ postId, replyToId }) => {
 
   const onCancel = useCallback(() => {
     setIsReplyingOpen(false);
+    window.location.reload();
   }, []);
 
   return (

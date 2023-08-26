@@ -166,6 +166,7 @@ const EditComment: FC<EditCommentProps> = ({ comment, commentId }) => {
 
   const onCancel = useCallback(() => {
     setIsEditorOpen(false);
+    window.location.reload();
   }, []);
 
   return (
