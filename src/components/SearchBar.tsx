@@ -69,7 +69,7 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
           setInput(text);
           debounceRequest();
         }}
-        placeholder="Search communities..."
+        placeholder="Search..."
         className="outline-none border-none focus:border-none focus:outline-none ring-0"
       />
 
